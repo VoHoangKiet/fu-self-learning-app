@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F7F9FA"
+    android:fillViewport="true"
+    tools:context=".activities.CourseDetailActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header với course image -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="250dp">
+
+            <ImageView
+                android:id="@+id/imageViewCourseImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="#E0E0E0"
+                android:src="@android:drawable/ic_menu_gallery" />
+
+            <!-- Overlay với back button và play button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:orientation="vertical">
+
+                <!-- Top bar với back button -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingTop="32dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingBottom="8dp">
+
+                    <ImageView
+                        android:id="@+id/imageViewBack"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@android:drawable/ic_menu_revert"
+                        android:tint="@android:color/black"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:padding="4dp" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:id="@+id/imageViewShare"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@android:drawable/ic_menu_share"
+                        android:tint="@android:color/black"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:padding="4dp" />
+
+                </LinearLayout>
+
+                <!-- Spacer -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <!-- Play button overlay -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="32dp">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardViewPlayButton"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        app:cardCornerRadius="32dp"
+                        app:cardElevation="8dp"
+                        android:clickable="true"
+                        android:foreground="?android:attr/selectableItemBackground">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@android:drawable/ic_media_play"
+                            android:tint="@color/udemy_purple"
+                            android:background="@android:color/white"
+                            android:padding="16dp" />
+
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <!-- Course info content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            android:padding="16dp">
+
+            <!-- Course title -->
+            <TextView
+                android:id="@+id/textViewCourseTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The Complete Java Programming Masterclass"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/udemy_text_primary"
+                android:lineSpacingExtra="4dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Course stats row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <!-- Rating -->
+                <TextView
+                    android:id="@+id/textViewRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4.6"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/udemy_rating" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="★★★★★"
+                    android:textSize="14sp"
+                    android:textColor="@color/udemy_rating"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="16dp" />
+
+                <!-- Duration -->
+                <TextView
+                    android:id="@+id/textViewDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="56h"
+                    android:textSize="14sp"
+                    android:textColor="@color/udemy_text_secondary"
+                    android:layout_marginEnd="16dp" />
+
+                <!-- Lessons -->
+                <TextView
+                    android:id="@+id/textViewLessons"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4 lessons"
+                    android:textSize="14sp"
+                    android:textColor="@color/udemy_text_secondary" />
+
+            </LinearLayout>
+
+            <!-- Categories -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Categories"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/udemy_text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/layoutCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <!-- Categories will be added dynamically -->
+            </LinearLayout>
+
+            <!-- Instructor section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Instructor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/udemy_text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="2dp"
+                    android:layout_marginEnd="12dp">
+
+                    <ImageView
+                        android:id="@+id/imageViewInstructorAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:background="#E0E0E0"
+                        android:src="@android:drawable/ic_menu_myplaces" />
+
+                </androidx.cardview.widget.CardView>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textViewInstructorName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Mark Zukerberk"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/udemy_text_primary" />
+
+                    <TextView
+                        android:id="@+id/textViewInstructorEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="instructor@gmail.com"
+                        android:textSize="14sp"
+                        android:textColor="@color/udemy_text_secondary" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Course description -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="About this course"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/udemy_text_primary"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/textViewCourseDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Course description will be shown here..."
+                android:textSize="14sp"
+                android:textColor="@color/udemy_text_secondary"
+                android:lineSpacingExtra="4dp" />
+
+        </LinearLayout>
+
+        <!-- Course curriculum -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Course curriculum"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/udemy_text_primary"
+                android:layout_marginBottom="12dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewTopics"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+        </LinearLayout>
+
+        <!-- Price and enroll section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginTop="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/textViewPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Free"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/udemy_purple" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Created: "
+                    android:textSize="12sp"
+                    android:textColor="@color/udemy_text_muted" />
+
+                <TextView
+                    android:id="@+id/textViewCreatedDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="June 17, 2025"
+                    android:textSize="12sp"
+                    android:textColor="@color/udemy_text_muted" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/buttonEnrollNow"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Enroll Now"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="@color/udemy_purple"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+        <!-- Bottom padding -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+    </LinearLayout>
+
+</ScrollView> 
