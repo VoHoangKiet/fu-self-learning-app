@@ -19,6 +19,7 @@ import com.example.fu_self_learning_app.activities.auth.LoginActivity;
 public class MainActivity extends AppCompatActivity {
     TextView textViewWelcomeUser;
     Button buttonLogout;
+    Button buttonViewCourses;
     private boolean isLoggedIn;
     private String username;
 
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         textViewWelcomeUser = findViewById(R.id.textViewWelcomeUser);
         buttonLogout = findViewById(R.id.buttonLogout);
+        buttonViewCourses = findViewById(R.id.buttonViewCourses);
         getLoginData();
         if(!isLoggedIn) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
@@ -51,6 +53,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 logout();
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+        
+        buttonViewCourses.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, CoursesActivity.class);
                 startActivity(intent);
             }
         });

@@ -3,4 +3,17 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#1447E6</color>
+    
+    <!-- Udemy Colors -->
+    <color name="udemy_purple">#A435F0</color>
+    <color name="udemy_purple_light">#E8D5FF</color>
+    <color name="udemy_purple_bg">#F3E8FF</color>
+    <color name="udemy_text_primary">#1C1D1F</color>
+    <color name="udemy_text_secondary">#6A6F73</color>
+    <color name="udemy_text_muted">#9B9B9B</color>
+    <color name="udemy_background">#F7F9FA</color>
+    <color name="udemy_card_border">#D1D7DC</color>
+    <color name="udemy_rating">#E59819</color>
+    <color name="udemy_bestseller">#E67E00</color>
+    <color name="udemy_free">#52C41A</color>
 </resources>
