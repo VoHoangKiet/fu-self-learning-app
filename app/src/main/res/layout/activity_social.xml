@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SocialActivity">
+
+    <!-- Header: Avatar + Input -->
+    <LinearLayout
+        android:id="@+id/layoutHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/imageAvatar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/placeholder_avatar"
+            android:scaleType="centerCrop"
+            android:background="@drawable/ic_launcher_background"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="Avatar user"/>
+
+        <TextView
+            android:id="@+id/textCreatePost"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="12dp"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_edittext_rounded"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="Bạn đang nghĩ gì?"
+            android:textColor="#888"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <!-- RecyclerView feed -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewPosts"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="8dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddPost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Tạo bài post mới"
+        app:srcCompat="@android:drawable/ic_input_add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout> 
