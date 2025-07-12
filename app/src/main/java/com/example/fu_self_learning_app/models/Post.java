@@ -2,26 +2,35 @@ package com.example.fu_self_learning_app.models;
 
 public class Post {
     private int id;
-    private UserInfo user;      // Thông tin người đăng
-    private String content;
-    private String imageUrl;
+    private String title;
+    private String body;
+    private String image; // URL ảnh sau khi upload
+    private String status;
+    private UserInfo user;
     private String createdAt;
     private int likeCount;
     private int commentCount;
     private boolean isLiked;
 
-    // Getters and setters
+    // Getter/setter
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getBody() { return body; }
+    public void setBody(String body) { this.body = body; }
+
+    public String getImage() { return image; }
+
+    public void setImage(String image) { this.image = image; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
     public UserInfo getUser() { return user; }
     public void setUser(UserInfo user) { this.user = user; }
-
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
-
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
@@ -40,8 +49,8 @@ public class Post {
         return "Post{" +
                 "id=" + id +
                 ", user=" + (user != null ? user.getUsername() : "null") +
-                ", content='" + content + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
+                ", content='" + body + '\'' + // Assuming content is body for now
+                ", imageUrl='" + image + '\'' +
                 ", createdAt='" + createdAt + '\'' +
                 ", likeCount=" + likeCount +
                 ", commentCount=" + commentCount +

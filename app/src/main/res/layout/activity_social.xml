@@ -54,6 +54,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="8dp"/>
 
+        <EditText
+        android:id="@+id/editPostContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Bạn đang nghĩ gì?"
+        android:inputType="textMultiLine"
+        android:gravity="top|start"
+        android:minLines="3"
+        android:background="@drawable/bg_edittext_rounded"
+        android:padding="12dp"
+        android:textSize="16sp" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddPost"
         android:layout_width="wrap_content"
