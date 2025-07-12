@@ -3,6 +3,7 @@ package com.example.fu_self_learning_app.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Button buttonViewCourses;
     private boolean isLoggedIn;
     private String username;
-    
+
     // Navigation components
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
         isLoggedIn = prefs.getBoolean("is_logged_in", false);
         username = prefs.getString("username", null);
+        Log.d("DEBUG_TOKEN", username); // Ghi log token để kiểm tra
+
     }
 
     private void logout() {
@@ -54,35 +57,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         // Initialize views
         textViewWelcomeUser = findViewById(R.id.textViewWelcomeUser);
         buttonLogout = findViewById(R.id.buttonLogout);
         buttonViewCourses = findViewById(R.id.buttonViewCourses);
-        
+
         // Initialize navigation components
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         toolbar = findViewById(R.id.toolbar);
-        
+
         // Set up toolbar
         setSupportActionBar(toolbar);
-        
+
         // Set up navigation drawer
         toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, 
-                R.string.navigation_drawer_open, 
+                this, drawerLayout, toolbar,
+                R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        
+
         // Set navigation item selected listener
         navigationView.setNavigationItemSelectedListener(this);
-        
+
         // Update navigation header with username
         View headerView = navigationView.getHeaderView(0);
         TextView navHeaderUsername = headerView.findViewById(R.id.nav_header_username);
-        
+
         getLoginData();
         if(!isLoggedIn) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
@@ -90,12 +93,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             finish();
             return;
         }
-        
+
         if(username != null) {
             textViewWelcomeUser.setText("Welcome " + username);
             navHeaderUsername.setText(username);
         }
-        
+
         buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 finish();
             }
         });
-        
+
         buttonViewCourses.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,14 +117,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
-    
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        
+
         if (id == R.id.nav_profile) {
-            // Handle profile navigation
-            Toast.makeText(this, "Profile clicked", Toast.LENGTH_SHORT).show();
+            // 👉 Mở UserInformationActivity khi chọn "Profile"
+            Intent intent = new Intent(MainActivity.this, UserInformationActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_courses) {
             // Navigate to courses
             Intent intent = new Intent(MainActivity.this, CoursesActivity.class);
@@ -136,11 +140,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
             finish();
         }
-        
+
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-    
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {

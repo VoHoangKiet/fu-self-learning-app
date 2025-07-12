@@ -97,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+
         buttonGoRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
