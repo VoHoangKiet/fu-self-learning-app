@@ -47,9 +47,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.textTitle.setText(post.getBody());
         }
         // Ảnh post
-        if (post.getImage() != null && !post.getImage().isEmpty()) {
+        List<String> images = post.getImages();
+        if (post.getImages() != null && !post.getImages().isEmpty()) {
             holder.imagePost.setVisibility(View.VISIBLE);
-            Picasso.get().load(post.getImage())
+            String imageUrl = images.get(0);
+            if (!imageUrl.startsWith("http")) {
+                imageUrl = "https://fu-self-learning-api-22235821035.asia-southeast1.run.app" + imageUrl;
+            }
+            android.util.Log.d("DEBUG_IMAGE_URL", "imageUrl = " + imageUrl);
+            Picasso.get().load(imageUrl)
                     .placeholder(R.drawable.ic_launcher_background)
                     .error(R.drawable.ic_launcher_background)
                     .into(holder.imagePost);

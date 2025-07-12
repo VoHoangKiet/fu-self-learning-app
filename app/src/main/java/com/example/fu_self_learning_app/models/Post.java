@@ -1,10 +1,12 @@
 package com.example.fu_self_learning_app.models;
 
+import java.util.List;
+
 public class Post {
     private int id;
     private String title;
     private String body;
-    private String image; // URL ảnh sau khi upload
+    private List<String> images; // Thay image thành images
     private String status;
     private UserInfo user;
     private String createdAt;
@@ -22,9 +24,10 @@ public class Post {
     public String getBody() { return body; }
     public void setBody(String body) { this.body = body; }
 
-    public String getImage() { return image; }
-
-    public void setImage(String image) { this.image = image; }
+    public List<String> getImages() {
+        return images;
+    }
+    public void setImages(List<String> images) { this.images = images; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
@@ -49,8 +52,9 @@ public class Post {
         return "Post{" +
                 "id=" + id +
                 ", user=" + (user != null ? user.getUsername() : "null") +
-                ", content='" + body + '\'' + // Assuming content is body for now
-                ", imageUrl='" + image + '\'' +
+                ", title='" + title + '\'' +
+                ", body='" + body + '\'' +
+                ", images=" + images +
                 ", createdAt='" + createdAt + '\'' +
                 ", likeCount=" + likeCount +
                 ", commentCount=" + commentCount +

@@ -246,9 +246,12 @@ public class SocialActivity extends AppCompatActivity {
         newPost.setCreatedAt("Bây giờ");
         newPost.setLikeCount(0);
         newPost.setCommentCount(0);
+        // Thêm imageList
+        List<String> imageList = new ArrayList<>();
         if (selectedImageUri != null) {
-            newPost.setImage(selectedImageUri.toString());
+            imageList.add(selectedImageUri.toString());
         }
+        newPost.setImages(imageList);
         
         postList.add(0, newPost);
         postAdapter.notifyItemInserted(0);
