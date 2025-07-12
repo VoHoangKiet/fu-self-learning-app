@@ -2,6 +2,7 @@ package com.example.fu_self_learning_app.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -31,18 +32,20 @@ public class ChangePasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_change_password);
 
         edtOldPassword = findViewById(R.id.edtOldPassword);
+        System.out.println(edtOldPassword);
         edtNewPassword = findViewById(R.id.edtNewPassword);
         edtConfirmPassword = findViewById(R.id.edtConfirmPassword);
         btnChange = findViewById(R.id.btnChange);
 
-        SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        token = "Bearer " + prefs.getString("token", "");
+        SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
+        token = "Bearer " + prefs.getString("access_token", "");
 
         // Dùng APIClient thay vì RetrofitClient
         userService = APIClient.getClient(getApplicationContext()).create(UserService.class);
 
         btnChange.setOnClickListener(v -> {
             String oldPass = edtOldPassword.getText().toString();
+            Log.d("DEBUG_OLD_PASSWORD", "Old password: " + oldPass);
             String newPass = edtNewPassword.getText().toString();
             String confirmPass = edtConfirmPassword.getText().toString();
 
@@ -69,5 +72,10 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 }
             });
         });
+        Button btnBackToInfo = findViewById(R.id.btnBackToInfo);
+        btnBackToInfo.setOnClickListener(view -> {
+            finish(); // Đóng ChangePasswordActivity, trở lại màn trước đó (UserInformationActivity)
+        });
+
     }
 }

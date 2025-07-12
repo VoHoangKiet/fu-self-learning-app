@@ -73,6 +73,14 @@ public class UserInformationActivity extends AppCompatActivity {
             Intent intent = new Intent(UserInformationActivity.this, ChangePasswordActivity.class);
             startActivity(intent);
         });
+        Button btnBackToMain = findViewById(R.id.btnBackToMain);
+        btnBackToMain.setOnClickListener(view -> {
+            Intent intent = new Intent(UserInformationActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP); // optional: tránh tạo lại MainActivity nếu đã có
+            startActivity(intent);
+            finish(); // optional: đóng UserInformationActivity
+        });
+
     }
 
     private void getUserProfile() {

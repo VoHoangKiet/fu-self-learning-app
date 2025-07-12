@@ -7,8 +7,11 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
+        android:layout_marginTop="50dp"
         android:layout_height="wrap_content">
-
+<!--        <include-->
+<!--            layout="@menu/navigation_menu"-->
+<!--            android:id="@+id/layoutHeader" />-->
         <ImageView
             android:id="@+id/imgAvatar"
             android:layout_width="120dp"
@@ -67,6 +70,14 @@
             android:layout_height="wrap_content"
             android:text="ChangePassword"
             android:layout_marginTop="16dp"/>
+        <Button
+            android:id="@+id/btnBackToMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Back to Main"
+            android:layout_marginTop="16dp"/>
+
 
     </LinearLayout>
+
 </ScrollView>
