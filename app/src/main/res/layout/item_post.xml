@@ -12,12 +12,13 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <!-- Row: Avatar + Username -->
+        <!-- Row: Avatar + Username + Delete -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:padding="8dp">
 
             <ImageView
                 android:id="@+id/imageAvatar"
@@ -30,12 +31,23 @@
 
             <TextView
                 android:id="@+id/textUsername"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:text="Username"
                 android:layout_marginStart="8dp"
-                android:textSize="15sp"/>
+                android:textSize="15sp"
+                android:layout_weight="1"/>
+
+            <ImageView
+                android:id="@+id/btnDelete"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_delete"
+                android:tint="#F44336"
+                android:contentDescription="Xoá bài viết"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="4dp"/>
         </LinearLayout>
 
         <!-- Title/content -->

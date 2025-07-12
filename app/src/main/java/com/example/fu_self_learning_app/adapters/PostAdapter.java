@@ -19,6 +19,30 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         this.postList = postList;
     }
 
+    public interface OnDeleteClickListener {
+        void onDeleteClick(Post post, int position);
+    }
+    private OnDeleteClickListener deleteClickListener;
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.deleteClickListener = listener;
+    }
+
+    public interface OnPostClickListener {
+        void onPostClick(Post post);
+    }
+    private OnPostClickListener postClickListener;
+    public void setOnPostClickListener(OnPostClickListener listener) {
+        this.postClickListener = listener;
+    }
+
+    public interface OnLikeClickListener {
+        void onLikeClick(Post post, int position);
+    }
+    private OnLikeClickListener likeClickListener;
+    public void setOnLikeClickListener(OnLikeClickListener listener) {
+        this.likeClickListener = listener;
+    }
+
     @NonNull
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -62,9 +86,34 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else {
             holder.imagePost.setVisibility(View.GONE);
         }
-        // Like/Comment
+        // Like/Comment với toggle functionality
         holder.textLikeCount.setText("Like: " + post.getLikeCount());
         holder.textCommentCount.setText("Comment: " + post.getCommentCount());
+        
+        // Set màu cho like text dựa trên trạng thái liked
+        if (post.isLiked()) {
+            holder.textLikeCount.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.holo_blue_dark));
+        } else {
+            holder.textLikeCount.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.darker_gray));
+        }
+        
+        // Click listener cho like
+        holder.textLikeCount.setOnClickListener(v -> {
+            if (likeClickListener != null) {
+                likeClickListener.onLikeClick(post, position);
+            }
+        });
+        holder.btnDelete.setOnClickListener(v -> {
+            android.util.Log.d("DEBUG_DELETE_CLICK", "Clicked delete for postId: " + post.getId());
+            if (deleteClickListener != null) {
+                deleteClickListener.onDeleteClick(post, position);
+            }
+        });
+        holder.itemView.setOnClickListener(v -> {
+            if (postClickListener != null) {
+                postClickListener.onPostClick(post);
+            }
+        });
     }
 
     @Override
@@ -73,12 +122,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageAvatar, imagePost;
+        ImageView imageAvatar, imagePost, btnDelete;
         TextView textUsername, textTitle, textLikeCount, textCommentCount;
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
             imageAvatar = itemView.findViewById(R.id.imageAvatar);
             imagePost = itemView.findViewById(R.id.imagePost);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
             textUsername = itemView.findViewById(R.id.textUsername);
             textTitle = itemView.findViewById(R.id.textTitle);
             textLikeCount = itemView.findViewById(R.id.textLikeCount);

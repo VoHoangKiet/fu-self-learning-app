@@ -20,11 +20,16 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import com.example.fu_self_learning_app.models.UserInfo;
+import com.example.fu_self_learning_app.models.Comment;
+import com.example.fu_self_learning_app.models.request.CommentRequest;
 import com.example.fu_self_learning_app.network.APIClient;
 import com.example.fu_self_learning_app.services.SocialService;
+import com.example.fu_self_learning_app.adapters.CommentAdapter;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -82,6 +87,90 @@ public class SocialActivity extends AppCompatActivity {
         findViewById(R.id.editPostContent).setOnLongClickListener(v -> {
             testCreateSimplePost();
             return true;
+        });
+
+        postAdapter.setOnDeleteClickListener((post, position) -> {
+            new AlertDialog.Builder(this)
+                .setTitle("Xác nhận xoá")
+                .setMessage("Bạn có chắc muốn xoá bài viết này không?")
+                .setPositiveButton("Xoá", (dialog, which) -> {
+                    socialService.deletePost(post.getId()).enqueue(new retrofit2.Callback<Void>() {
+                        @Override
+                        public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                            android.util.Log.d("DEBUG_DELETE", "Delete response code: " + response.code());
+                            if (!response.isSuccessful() && response.errorBody() != null) {
+                                try {
+                                    android.util.Log.d("DEBUG_DELETE", "Error body: " + response.errorBody().string());
+                                } catch (Exception e) {
+                                    android.util.Log.d("DEBUG_DELETE", "Error reading error body: " + e.getMessage());
+                                }
+                            }
+                            if (response.isSuccessful()) {
+                                postList.remove(position);
+                                postAdapter.notifyItemRemoved(position);
+                                android.widget.Toast.makeText(SocialActivity.this, "Đã xoá bài viết", android.widget.Toast.LENGTH_SHORT).show();
+                            } else {
+                                android.widget.Toast.makeText(SocialActivity.this, "Xoá thất bại", android.widget.Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        @Override
+                        public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                            android.util.Log.d("DEBUG_DELETE", "Delete failed: " + t.getMessage());
+                            android.widget.Toast.makeText(SocialActivity.this, "Lỗi kết nối", android.widget.Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                })
+                .setNegativeButton("Huỷ", null)
+                .show();
+        });
+
+        postAdapter.setOnPostClickListener(post -> {
+            showCommentDialog(post);
+        });
+        
+        postAdapter.setOnLikeClickListener((post, position) -> {
+            // Toggle like state
+            boolean newLikeState = !post.isLiked();
+            post.setLiked(newLikeState);
+            
+            // Update like count
+            if (newLikeState) {
+                post.setLikeCount(post.getLikeCount() + 1);
+            } else {
+                post.setLikeCount(Math.max(0, post.getLikeCount() - 1));
+            }
+            
+            // Update UI
+            postAdapter.notifyItemChanged(position);
+            
+            // Call API to update like
+            socialService.likePost(post.getId()).enqueue(new retrofit2.Callback<Void>() {
+                @Override
+                public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                    if (!response.isSuccessful()) {
+                        // Revert if API fails
+                        post.setLiked(!newLikeState);
+                        if (newLikeState) {
+                            post.setLikeCount(Math.max(0, post.getLikeCount() - 1));
+                        } else {
+                            post.setLikeCount(post.getLikeCount() + 1);
+                        }
+                        postAdapter.notifyItemChanged(position);
+                    }
+                }
+                
+                @Override
+                public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                    // Revert if API fails
+                    post.setLiked(!newLikeState);
+                    if (newLikeState) {
+                        post.setLikeCount(Math.max(0, post.getLikeCount() - 1));
+                    } else {
+                        post.setLikeCount(post.getLikeCount() + 1);
+                    }
+                    postAdapter.notifyItemChanged(position);
+                }
+            });
         });
     }
 
@@ -330,5 +419,216 @@ public class SocialActivity extends AppCompatActivity {
                     Log.e("DEBUG_POST", "Simple post error: " + t.getMessage());
                 }
             });
+    }
+
+    private void showCommentDialog(Post post) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_comments, null);
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+
+        // Hiển thị thông tin post
+        ImageView postUserAvatar = dialogView.findViewById(R.id.postUserAvatar);
+        TextView postUsername = dialogView.findViewById(R.id.postUsername);
+        TextView postTitle = dialogView.findViewById(R.id.postTitle);
+        TextView postBody = dialogView.findViewById(R.id.postBody);
+        ImageView postImage = dialogView.findViewById(R.id.postImage);
+
+        // Load avatar của user post
+        if (post.getUser() != null && post.getUser().getAvatarUrl() != null && !post.getUser().getAvatarUrl().isEmpty()) {
+            Glide.with(this)
+                .load(post.getUser().getAvatarUrl())
+                .placeholder(R.drawable.placeholder_avatar)
+                .error(R.drawable.placeholder_avatar)
+                .into(postUserAvatar);
+        } else {
+            postUserAvatar.setImageResource(R.drawable.placeholder_avatar);
+        }
+
+        // Hiển thị thông tin post
+        postUsername.setText(post.getUser() != null ? post.getUser().getUsername() : "Unknown");
+        postTitle.setText(post.getTitle() != null ? post.getTitle() : "");
+        postBody.setText(post.getBody() != null ? post.getBody() : "");
+
+        // Hiển thị ảnh post nếu có
+        if (post.getImages() != null && !post.getImages().isEmpty()) {
+            postImage.setVisibility(View.VISIBLE);
+            String imageUrl = post.getImages().get(0);
+            if (!imageUrl.startsWith("http")) {
+                imageUrl = "https://fu-self-learning-api-22235821035.asia-southeast1.run.app" + imageUrl;
+            }
+            Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_launcher_background)
+                .error(R.drawable.ic_launcher_background)
+                .into(postImage);
+        } else {
+            postImage.setVisibility(View.GONE);
+        }
+
+        // Xử lý nút đóng dialog
+        ImageView btnCloseDialog = dialogView.findViewById(R.id.btnCloseDialog);
+        btnCloseDialog.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        RecyclerView recyclerViewComments = dialogView.findViewById(R.id.recyclerViewComments);
+        TextView textShowMoreComments = dialogView.findViewById(R.id.textShowMoreComments);
+        View inputSection = dialogView.findViewById(R.id.inputSection);
+        EditText editTextComment = dialogView.findViewById(R.id.editTextComment);
+        Button buttonSendComment = dialogView.findViewById(R.id.buttonSendComment);
+        Button buttonCancelReply = dialogView.findViewById(R.id.buttonCancelReply);
+        
+        // Luôn hiển thị toàn bộ comment và input
+        List<Comment> commentList = new ArrayList<>();
+        com.example.fu_self_learning_app.adapters.CommentAdapter commentAdapter = new com.example.fu_self_learning_app.adapters.CommentAdapter(commentList);
+        recyclerViewComments.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewComments.setAdapter(commentAdapter);
+        inputSection.setVisibility(View.VISIBLE);
+        
+        // Gọi API lấy comment
+        socialService.getCommentsByPostId(post.getId()).enqueue(new retrofit2.Callback<List<com.example.fu_self_learning_app.models.Comment>>() {
+            @Override
+            public void onResponse(retrofit2.Call<List<com.example.fu_self_learning_app.models.Comment>> call, retrofit2.Response<List<com.example.fu_self_learning_app.models.Comment>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    commentList.clear();
+                    commentList.addAll(response.body());
+                    commentAdapter.notifyDataSetChanged();
+                }
+            }
+            @Override
+            public void onFailure(retrofit2.Call<List<com.example.fu_self_learning_app.models.Comment>> call, Throwable t) { }
+        });
+
+        // Biến để track comment đang reply
+        final Comment[] replyingToComment = {null};
+        
+        // Set reply click listener
+        commentAdapter.setOnReplyClickListener(comment -> {
+            replyingToComment[0] = comment;
+            // Hiển thị input với @username
+            String replyText = "@" + (comment.getUser() != null ? comment.getUser().getUsername() : "Unknown") + " ";
+            editTextComment.setText(replyText);
+            editTextComment.setSelection(replyText.length());
+            editTextComment.requestFocus();
+            
+            // Thay đổi placeholder để user biết đang reply
+            editTextComment.setHint("Đang reply " + (comment.getUser() != null ? comment.getUser().getUsername() : "Unknown"));
+            
+            // Hiển thị cancel reply button
+            buttonCancelReply.setVisibility(View.VISIBLE);
+        });
+
+        // Set delete comment click listener
+        commentAdapter.setOnDeleteCommentClickListener((comment, position) -> {
+            new AlertDialog.Builder(this)
+                .setTitle("Xác nhận xóa")
+                .setMessage("Bạn có chắc muốn xóa bình luận này?")
+                .setPositiveButton("Xóa", (dialogInterface, i) -> {
+                    // TODO: Call API delete comment
+                    // socialService.deleteComment(comment.getId()).enqueue(...);
+                    
+                    // Tạm thời xóa khỏi local list
+                    commentList.remove(position);
+                    commentAdapter.notifyItemRemoved(position);
+                    
+                    // Cập nhật comment count của post
+                    post.setCommentCount(Math.max(0, post.getCommentCount() - 1));
+                    
+                    android.widget.Toast.makeText(this, "Đã xóa bình luận", android.widget.Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+        });
+
+        // Gửi comment
+        buttonSendComment.setOnClickListener(v -> {
+            String commentText = editTextComment.getText().toString().trim();
+            if (!commentText.isEmpty()) {
+                // Lấy thông tin user từ SharedPreferences
+                SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
+                UserInfo user = new UserInfo();
+                user.setUsername(prefs.getString("username", ""));
+                user.setAvatarUrl(prefs.getString("avatarUrl", ""));
+                // Xử lý reply logic
+                final Integer[] parentId = {null};
+                final String[] finalCommentText = {commentText};
+                if (replyingToComment[0] != null) {
+                    parentId[0] = replyingToComment[0].getId();
+                    if (commentText.startsWith("@")) {
+                        String username = replyingToComment[0].getUser() != null ? 
+                            replyingToComment[0].getUser().getUsername() : "Unknown";
+                        if (commentText.startsWith("@" + username + " ")) {
+                            finalCommentText[0] = commentText.substring(("@" + username + " ").length());
+                        }
+                    }
+                }
+                CommentRequest commentRequest = new CommentRequest(post.getId(), finalCommentText[0], parentId[0]);
+                socialService.createComment(commentRequest).enqueue(new retrofit2.Callback<Comment>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<com.example.fu_self_learning_app.models.Comment> call, retrofit2.Response<com.example.fu_self_learning_app.models.Comment> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            commentList.add(response.body());
+                            commentAdapter.notifyDataSetChanged();
+                            recyclerViewComments.scrollToPosition(commentList.size() - 1);
+                            editTextComment.setText("");
+                            editTextComment.setHint("Viết comment...");
+                            replyingToComment[0] = null;
+                            buttonCancelReply.setVisibility(View.GONE);
+                        } else {
+                            Comment fallbackComment = new Comment();
+                            fallbackComment.setContent(finalCommentText[0]);
+                            fallbackComment.setUser(user);
+                            fallbackComment.setCreatedAt("Bây giờ");
+                            if (parentId[0] != null) {
+                                fallbackComment.setParentId(parentId[0]);
+                            }
+                            commentList.add(fallbackComment);
+                            commentAdapter.notifyDataSetChanged();
+                            recyclerViewComments.scrollToPosition(commentList.size() - 1);
+                            editTextComment.setText("");
+                            editTextComment.setHint("Viết comment...");
+                            replyingToComment[0] = null;
+                            buttonCancelReply.setVisibility(View.GONE);
+                        }
+                    }
+                    @Override
+                    public void onFailure(retrofit2.Call<Comment> call, Throwable t) {
+                        Comment fallbackComment = new Comment();
+                        fallbackComment.setContent(finalCommentText[0]);
+                        fallbackComment.setUser(user);
+                        fallbackComment.setCreatedAt("Bây giờ");
+                        if (parentId[0] != null) {
+                            fallbackComment.setParentId(parentId[0]);
+                        }
+                        commentList.add(fallbackComment);
+                        commentAdapter.notifyDataSetChanged();
+                        recyclerViewComments.scrollToPosition(commentList.size() - 1);
+                        editTextComment.setText("");
+                        editTextComment.setHint("Viết comment...");
+                        replyingToComment[0] = null;
+                        buttonCancelReply.setVisibility(View.GONE);
+                    }
+                });
+            }
+        });
+
+        dialog.show();
+    }
+    
+    // Method để reload comments từ API
+    private void loadCommentsFromApi(int postId, List<Comment> commentList, CommentAdapter commentAdapter) {
+        socialService.getCommentsByPostId(postId).enqueue(new retrofit2.Callback<List<Comment>>() {
+            @Override
+            public void onResponse(retrofit2.Call<List<Comment>> call, retrofit2.Response<List<Comment>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    commentList.clear();
+                    commentList.addAll(response.body());
+                    commentAdapter.notifyDataSetChanged();
+                }
+            }
+            @Override
+            public void onFailure(retrofit2.Call<List<Comment>> call, Throwable t) { }
+        });
     }
 } 
