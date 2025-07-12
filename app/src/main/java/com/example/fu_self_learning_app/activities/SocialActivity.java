@@ -502,44 +502,19 @@ public class SocialActivity extends AppCompatActivity {
 
         // Biến để track comment đang reply
         final Comment[] replyingToComment = {null};
-        
-        // Set reply click listener
         commentAdapter.setOnReplyClickListener(comment -> {
             replyingToComment[0] = comment;
-            // Hiển thị input với @username
             String replyText = "@" + (comment.getUser() != null ? comment.getUser().getUsername() : "Unknown") + " ";
             editTextComment.setText(replyText);
             editTextComment.setSelection(replyText.length());
             editTextComment.requestFocus();
-            
-            // Thay đổi placeholder để user biết đang reply
             editTextComment.setHint("Đang reply " + (comment.getUser() != null ? comment.getUser().getUsername() : "Unknown"));
-            
-            // Hiển thị cancel reply button
             buttonCancelReply.setVisibility(View.VISIBLE);
         });
 
         // Set delete comment click listener
-        commentAdapter.setOnDeleteCommentClickListener((comment, position) -> {
-            new AlertDialog.Builder(this)
-                .setTitle("Xác nhận xóa")
-                .setMessage("Bạn có chắc muốn xóa bình luận này?")
-                .setPositiveButton("Xóa", (dialogInterface, i) -> {
-                    // TODO: Call API delete comment
-                    // socialService.deleteComment(comment.getId()).enqueue(...);
-                    
-                    // Tạm thời xóa khỏi local list
-                    commentList.remove(position);
-                    commentAdapter.notifyItemRemoved(position);
-                    
-                    // Cập nhật comment count của post
-                    post.setCommentCount(Math.max(0, post.getCommentCount() - 1));
-                    
-                    android.widget.Toast.makeText(this, "Đã xóa bình luận", android.widget.Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
-        });
+        // Xóa logic setOnDeleteCommentClickListener vì adapter không còn hàm này
+        // commentAdapter.setOnDeleteCommentClickListener((comment, position) -> { ... });
 
         // Gửi comment
         buttonSendComment.setOnClickListener(v -> {

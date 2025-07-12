@@ -15,27 +15,22 @@ import java.util.List;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder> {
     private List<Comment> commentList;
+    private int indentLevel;
     private OnReplyClickListener replyClickListener;
-    private OnDeleteCommentClickListener deleteCommentClickListener;
-
     public interface OnReplyClickListener {
         void onReplyClick(Comment comment);
     }
-
-    public interface OnDeleteCommentClickListener {
-        void onDeleteCommentClick(Comment comment, int position);
-    }
-
-    public CommentAdapter(List<Comment> commentList) {
-        this.commentList = commentList;
-    }
-
     public void setOnReplyClickListener(OnReplyClickListener listener) {
         this.replyClickListener = listener;
     }
 
-    public void setOnDeleteCommentClickListener(OnDeleteCommentClickListener listener) {
-        this.deleteCommentClickListener = listener;
+    public CommentAdapter(List<Comment> commentList) {
+        this(commentList, 0);
+    }
+
+    private CommentAdapter(List<Comment> commentList, int indentLevel) {
+        this.commentList = commentList;
+        this.indentLevel = indentLevel;
     }
 
     @NonNull
@@ -48,13 +43,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         Comment comment = commentList.get(position);
-        
-        // Hiển thị thông tin comment
         holder.textUsername.setText(comment.getUser() != null ? comment.getUser().getUsername() : "Unknown");
         holder.textContent.setText(comment.getContent());
-        holder.textTime.setText(comment.getCreatedAt());
-
-        // Load avatar
         String avatarUrl = comment.getUser() != null ? comment.getUser().getAvatarUrl() : null;
         if (avatarUrl != null && !avatarUrl.isEmpty()) {
             Glide.with(holder.imageAvatar.getContext())
@@ -65,36 +55,26 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         } else {
             holder.imageAvatar.setImageResource(R.drawable.placeholder_avatar);
         }
-
-        // Xử lý click Reply
+        int margin = indentLevel * 40;
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams();
+        if (params != null) {
+            params.setMarginStart(margin);
+            holder.itemView.setLayoutParams(params);
+        }
+        // Reply button click
         holder.textReply.setOnClickListener(v -> {
             if (replyClickListener != null) {
                 replyClickListener.onReplyClick(comment);
             }
         });
-
-        // Xử lý click Delete comment
-        holder.btnDeleteComment.setOnClickListener(v -> {
-            if (deleteCommentClickListener != null) {
-                deleteCommentClickListener.onDeleteCommentClick(comment, holder.getAdapterPosition());
-            }
-        });
-
-        // Hiển thị replies nếu có
         if (comment.getReplies() != null && !comment.getReplies().isEmpty()) {
-            holder.repliesContainer.setVisibility(View.VISIBLE);
             holder.recyclerViewReplies.setVisibility(View.VISIBLE);
-            holder.textRepliesCount.setVisibility(View.GONE);
-            
-            // Tạo adapter cho replies
-            ReplyAdapter replyAdapter = new ReplyAdapter(comment.getReplies());
             holder.recyclerViewReplies.setLayoutManager(new LinearLayoutManager(holder.recyclerViewReplies.getContext()));
-            holder.recyclerViewReplies.setAdapter(replyAdapter);
-            
-            // Set reply click listener cho replies
+            CommentAdapter replyAdapter = new CommentAdapter(comment.getReplies(), indentLevel + 1);
             replyAdapter.setOnReplyClickListener(replyClickListener);
+            holder.recyclerViewReplies.setAdapter(replyAdapter);
         } else {
-            holder.repliesContainer.setVisibility(View.GONE);
+            holder.recyclerViewReplies.setVisibility(View.GONE);
         }
     }
 
@@ -104,90 +84,16 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     }
 
     public static class CommentViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageAvatar, btnDeleteComment;
-        TextView textUsername, textContent, textTime, textReply, textRepliesCount;
-        View repliesContainer;
+        ImageView imageAvatar;
+        TextView textUsername, textContent, textReply;
         RecyclerView recyclerViewReplies;
-        
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
             imageAvatar = itemView.findViewById(R.id.imageAvatar);
-            btnDeleteComment = itemView.findViewById(R.id.btnDeleteComment);
             textUsername = itemView.findViewById(R.id.textUsername);
             textContent = itemView.findViewById(R.id.textContent);
-            textTime = itemView.findViewById(R.id.textTime);
             textReply = itemView.findViewById(R.id.textReply);
-            textRepliesCount = itemView.findViewById(R.id.textRepliesCount);
-            repliesContainer = itemView.findViewById(R.id.repliesContainer);
             recyclerViewReplies = itemView.findViewById(R.id.recyclerViewReplies);
-        }
-    }
-    
-    // Adapter riêng cho replies
-    private static class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHolder> {
-        private List<Comment> replies;
-        private OnReplyClickListener replyClickListener;
-
-        public ReplyAdapter(List<Comment> replies) {
-            this.replies = replies;
-        }
-
-        public void setOnReplyClickListener(OnReplyClickListener listener) {
-            this.replyClickListener = listener;
-        }
-
-        @NonNull
-        @Override
-        public ReplyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_reply, parent, false);
-            return new ReplyViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ReplyViewHolder holder, int position) {
-            Comment reply = replies.get(position);
-            
-            holder.textUsername.setText(reply.getUser() != null ? reply.getUser().getUsername() : "Unknown");
-            holder.textContent.setText(reply.getContent());
-            holder.textTime.setText(reply.getCreatedAt());
-
-            // Load avatar
-            String avatarUrl = reply.getUser() != null ? reply.getUser().getAvatarUrl() : null;
-            if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                Glide.with(holder.imageAvatar.getContext())
-                    .load(avatarUrl)
-                    .placeholder(R.drawable.placeholder_avatar)
-                    .error(R.drawable.placeholder_avatar)
-                    .into(holder.imageAvatar);
-            } else {
-                holder.imageAvatar.setImageResource(R.drawable.placeholder_avatar);
-            }
-
-            // Xử lý click Reply cho reply
-            holder.textReply.setOnClickListener(v -> {
-                if (replyClickListener != null) {
-                    replyClickListener.onReplyClick(reply);
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return replies.size();
-        }
-
-        static class ReplyViewHolder extends RecyclerView.ViewHolder {
-            ImageView imageAvatar;
-            TextView textUsername, textContent, textTime, textReply;
-            
-            public ReplyViewHolder(@NonNull View itemView) {
-                super(itemView);
-                imageAvatar = itemView.findViewById(R.id.imageAvatar);
-                textUsername = itemView.findViewById(R.id.textUsername);
-                textContent = itemView.findViewById(R.id.textContent);
-                textTime = itemView.findViewById(R.id.textTime);
-                textReply = itemView.findViewById(R.id.textReply);
-            }
         }
     }
 } 
