@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Row: Avatar + Username + Delete -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/imageAvatar"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/placeholder_avatar"
+                android:scaleType="centerCrop"
+                android:background="@drawable/ic_launcher_background"
+                android:contentDescription="Avatar user"/>
+
+            <TextView
+                android:id="@+id/textUsername"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="Username"
+                android:layout_marginStart="8dp"
+                android:textSize="15sp"
+                android:layout_weight="1"/>
+
+            <ImageView
+                android:id="@+id/btnDelete"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_delete"
+                android:tint="#F44336"
+                android:contentDescription="Xoá bài viết"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="4dp"/>
+        </LinearLayout>
+
+        <!-- Title/content -->
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nội dung bài post"
+            android:layout_marginTop="8dp"
+            android:textSize="16sp"/>
+
+        <!-- Ảnh post (nếu có) -->
+        <ImageView
+            android:id="@+id/imagePost"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            android:contentDescription="Ảnh bài post"/>
+
+        <!-- Like/Comment row -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/textLikeCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Like: 0"
+                android:layout_marginEnd="16dp"/>
+
+            <TextView
+                android:id="@+id/textCommentCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Comment: 0"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView> 
