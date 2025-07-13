@@ -61,6 +61,10 @@
             android:name=".activities.ChatListActivity"
             android:exported="false">
         </activity>
+        <activity
+            android:name=".activities.DebugActivity"
+            android:exported="false">
+        </activity>
     </application>
 
 </manifest>

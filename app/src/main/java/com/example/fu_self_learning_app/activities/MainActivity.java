@@ -23,6 +23,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.fu_self_learning_app.R;
 import com.example.fu_self_learning_app.activities.auth.LoginActivity;
+import com.example.fu_self_learning_app.activities.ChatListActivity;
+import com.example.fu_self_learning_app.activities.DebugActivity;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void getLoginData() {
         SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
         isLoggedIn = prefs.getBoolean("is_logged_in", false);
-        username = prefs.getString("username", "data is null");
+        username = prefs.getString("username", null);
         Log.d("DEBUG_TOKEN", username); // Ghi log token để kiểm tra
 
     }
@@ -141,12 +143,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent intent = new Intent(MainActivity.this, CoursesActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_chat) {
-            // Navigate to chat
+            // Navigate to chat list
             Intent intent = new Intent(MainActivity.this, ChatListActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_settings) {
-            // Handle settings navigation
-            Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
+            // Handle settings navigation - Open Debug Activity
+            Intent intent = new Intent(MainActivity.this, DebugActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_logout) {
             // Handle logout
             logout();

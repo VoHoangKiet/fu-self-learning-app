@@ -40,30 +40,52 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString("avatarUrl", userInfo.getAvatarUrl());
         editor.putString("role", userInfo.getRole());
         editor.putString("phone_number", userInfo.getPhoneNumber());
+        editor.putInt("user_id", userInfo.getId()); // Lưu user_id cho chat
         editor.apply();
+        
+        Log.d("LoginActivity", "✅ Saved user_id: " + userInfo.getId() + " to SharedPreferences");
     }
 
     private void loginAsync(LoginRequest req) {
+        Log.d("LoginActivity", "🚀 Starting login request for email: " + req.getEmail());
+        
         authService.login(req).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                Log.d("LoginActivity", "📥 Login response received - Success: " + response.isSuccessful());
+                
                 if(response.isSuccessful()) {
-                    String accessToken, refreshToken;
-                    UserInfo userInfo;
-                    accessToken = response.body().getAccessToken();
-                    refreshToken = response.body().getRefreshToken();
-                    userInfo = response.body().getUserInfo();
+                    LoginResponse loginResponse = response.body();
+                    if (loginResponse == null) {
+                        Log.e("LoginActivity", "❌ Login response body is null!");
+                        Toast.makeText(getApplicationContext(), "Error: Empty response from server", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    
+                    String accessToken = loginResponse.getAccessToken();
+                    String refreshToken = loginResponse.getRefreshToken();
+                    UserInfo userInfo = loginResponse.getUserInfo();
+                    
+                    Log.d("LoginActivity", "🔑 Access Token: " + (accessToken != null ? "Present" : "NULL"));
+                    Log.d("LoginActivity", "🔄 Refresh Token: " + (refreshToken != null ? "Present" : "NULL"));
+                    Log.d("LoginActivity", "👤 UserInfo: " + (userInfo != null ? "Present" : "NULL"));
+                    
+                    if (userInfo != null) {
+                        Log.d("LoginActivity", "📋 UserInfo details - ID: " + userInfo.getId() + ", Username: " + userInfo.getUsername() + ", Email: " + userInfo.getEmail());
+                    }
+                    
                     storeLoginDataToSharedPreferences(accessToken, refreshToken, userInfo);
                     Toast.makeText(getApplicationContext(), "Login Successfully", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
+                    Log.e("LoginActivity", "❌ Login failed - HTTP " + response.code() + ": " + response.message());
                     APIErrorUtils.handleError(getApplicationContext(), response);
                 }
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                Log.e("API Failure", t.getMessage());
+                Log.e("LoginActivity", "💥 Login API failure: " + t.getMessage(), t);
                 Toast.makeText(getApplicationContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -72,12 +94,16 @@ public class LoginActivity extends AppCompatActivity {
     private void login() {
         String email = editTextEmail.getText().toString();
         String password = editTextPassword.getText().toString();
+        
+        Log.d("LoginActivity", "🔐 Login button clicked - Email: " + email + ", Password length: " + password.length());
+        
         if(email.isEmpty() || password.isEmpty()) {
+            Log.w("LoginActivity", "⚠️ Empty email or password");
             Toast.makeText(getApplicationContext(), "Email and Password must be provided", Toast.LENGTH_SHORT).show();
         } else {
+            Log.d("LoginActivity", "✅ Calling loginAsync with email: " + email);
             loginAsync(new LoginRequest(email, password));
         }
-        // open (create if not exist) Auth file in shared preferences with MODE_PRIVATE mode (only our app can read/write this file)
     }
 
     @Override

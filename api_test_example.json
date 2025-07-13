@@ -1,0 +1,38 @@
+[
+    {
+        "id": 53,
+        "followingUser": {
+            "id": 7,
+            "username": "Mark Zukerberk",
+            "email": "instructor2@gmail.com",
+            "phoneNumber": "111-222-33333",
+            "dob": null,
+            "password": "$2b$10$VVXH58Ou1r6ZL.l9M956XeKgduFsEOE0mH/ixytud3bEOcloybATu",
+            "isActive": true,
+            "avatarUrl": "https://res.cloudinary.com/dxose7ko5/image/upload/v1750085311/post-image/ci9wbrxlxhxv34vc4xwx.jpg",
+            "role": "instructor",
+            "createdAt": "2025-06-16T14:47:50.466Z",
+            "updatedAt": "2025-06-18T01:59:09.141Z"
+        },
+        "createdAt": "2025-07-08T08:21:45.356Z",
+        "updatedAt": "2025-07-08T08:21:45.356Z"
+    },
+    {
+        "id": 54,
+        "followingUser": {
+            "id": 5,
+            "username": "quandao123",
+            "email": "quandao1@gmail.com",
+            "phoneNumber": "",
+            "dob": null,
+            "password": "$2b$10$k1.iu03BbgI77HTcJzmpEOl/CUtfNIM4yRyjA9uP3YqnP271nnOX6",
+            "isActive": true,
+            "avatarUrl": "https://res.cloudinary.com/dxose7ko5/image/upload/v1750224521/post-image/bf7dji3dp58hqvzf02pk.jpg",
+            "role": "student",
+            "createdAt": "2025-06-14T15:47:01.797Z",
+            "updatedAt": "2025-06-18T05:28:41.998Z"
+        },
+        "createdAt": "2025-07-08T08:21:47.772Z",
+        "updatedAt": "2025-07-08T08:21:47.772Z"
+    }
+]

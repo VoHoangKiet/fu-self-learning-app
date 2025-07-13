@@ -41,6 +41,7 @@ public class ChatSocketService {
         void onMessagesLoaded(List<ChatMessage> messages);
         void onMessageSent(ChatMessage message);
         void onConnectionError(String error);
+        void onSocketConnected(); // Thêm method mới
     }
 
     public ChatSocketService(Context context) {
@@ -59,15 +60,22 @@ public class ChatSocketService {
             SharedPreferences prefs = context.getSharedPreferences("Auth", Context.MODE_PRIVATE);
             int userId = prefs.getInt("user_id", -1);
             
+            Log.d(TAG, "🔧 Initializing socket with userId: " + userId);
+            
             if (userId != -1) {
                 options.query = "userId=" + userId;
+                Log.d(TAG, "✅ Added userId to socket query: " + options.query);
+            } else {
+                Log.w(TAG, "⚠️ No userId found in SharedPreferences");
             }
             
             socket = IO.socket(SOCKET_URL, options);
             setupEventListeners();
             
+            Log.d(TAG, "🚀 Socket initialized successfully");
+            
         } catch (URISyntaxException e) {
-            Log.e(TAG, "Socket initialization error: " + e.getMessage());
+            Log.e(TAG, "❌ Socket initialization error: " + e.getMessage());
         }
     }
 
@@ -76,6 +84,9 @@ public class ChatSocketService {
             @Override
             public void call(Object... args) {
                 Log.d(TAG, "Socket connected");
+                if (eventListener != null) {
+                    eventListener.onSocketConnected();
+                }
             }
         });
 
@@ -116,18 +127,29 @@ public class ChatSocketService {
             public void call(Object... args) {
                 if (args.length > 0 && eventListener != null) {
                     try {
+                        Log.d(TAG, "📥 messagesLoaded event received, raw data: " + args[0].toString());
+                        
                         Type listType = new TypeToken<List<JsonObject>>(){}.getType();
                         List<JsonObject> jsonMessages = gson.fromJson(args[0].toString(), listType);
                         List<ChatMessage> messages = new ArrayList<>();
                         
-                        for (JsonObject jsonObj : jsonMessages) {
-                            messages.add(parseChatMessage(jsonObj));
+                        Log.d(TAG, "🔢 Total messages loaded: " + jsonMessages.size());
+                        
+                        for (int i = 0; i < jsonMessages.size(); i++) {
+                            JsonObject jsonObj = jsonMessages.get(i);
+                            ChatMessage message = parseChatMessage(jsonObj);
+                            messages.add(message);
+                            Log.d(TAG, "📨 Message " + i + ": senderId=" + message.getSenderId() + 
+                                ", receiverId=" + message.getReceiverId() + 
+                                ", message=" + message.getMessage().substring(0, Math.min(20, message.getMessage().length())) + "...");
                         }
                         
                         eventListener.onMessagesLoaded(messages);
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing loaded messages: " + e.getMessage());
                     }
+                } else {
+                    Log.w(TAG, "⚠️ messagesLoaded called but no data received or no listener");
                 }
             }
         });
@@ -216,7 +238,10 @@ public class ChatSocketService {
             data.addProperty("senderUserId", request.getSenderUserId());
             data.addProperty("receiverUserId", request.getReceiverUserId());
             
+            Log.d(TAG, "📨 Loading messages - senderUserId: " + request.getSenderUserId() + ", receiverUserId: " + request.getReceiverUserId());
             socket.emit("loadMessages", data);
+        } else {
+            Log.e(TAG, "❌ Cannot load messages - socket not connected");
         }
     }
 
