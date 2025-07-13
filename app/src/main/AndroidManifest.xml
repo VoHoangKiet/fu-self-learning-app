@@ -53,6 +53,14 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
+        <activity
+            android:name=".activities.ChatActivity"
+            android:exported="false">
+        </activity>
+        <activity
+            android:name=".activities.ChatListActivity"
+            android:exported="false">
+        </activity>
     </application>
 
 </manifest>

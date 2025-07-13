@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TextView textViewWelcomeUser;
     Button buttonLogout;
     Button buttonViewCourses;
+    Button buttonChat;
     private boolean isLoggedIn;
     private String username;
 
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void getLoginData() {
         SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
         isLoggedIn = prefs.getBoolean("is_logged_in", false);
-        username = prefs.getString("username", null);
+        username = prefs.getString("username", "data is null");
         Log.d("DEBUG_TOKEN", username); // Ghi log token để kiểm tra
 
     }
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         textViewWelcomeUser = findViewById(R.id.textViewWelcomeUser);
         buttonLogout = findViewById(R.id.buttonLogout);
         buttonViewCourses = findViewById(R.id.buttonViewCourses);
+        buttonChat = findViewById(R.id.buttonChat);
 
         // Initialize navigation components
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -116,6 +118,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
             }
         });
+
+        buttonChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ChatListActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -129,6 +139,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_courses) {
             // Navigate to courses
             Intent intent = new Intent(MainActivity.this, CoursesActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_chat) {
+            // Navigate to chat
+            Intent intent = new Intent(MainActivity.this, ChatListActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_settings) {
             // Handle settings navigation
