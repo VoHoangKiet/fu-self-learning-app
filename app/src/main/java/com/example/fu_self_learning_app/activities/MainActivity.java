@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void getLoginData() {
         SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
         isLoggedIn = prefs.getBoolean("is_logged_in", false);
-        username = prefs.getString("username", null);
+        username = prefs.getString("username", "null");
         Log.d("DEBUG_TOKEN", username); // Ghi log token để kiểm tra
 
     }

@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 // cách dùng để tạo một service instance gọi API:
 // AuthService authService = APIClient.getClient().create(AuthService.class);
 public class APIClient {
-    private static final String BASE_URL = "https://fu-self-learning-api-22235821035.asia-southeast1.run.app/api/";
+    private static final String BASE_URL = "https://88088a78ef64.ngrok-free.app/api/";
     private static Retrofit retrofit;
 
     public static Retrofit getClient() {
