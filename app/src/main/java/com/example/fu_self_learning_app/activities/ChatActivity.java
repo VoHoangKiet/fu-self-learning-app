@@ -140,30 +140,98 @@ public class ChatActivity extends AppCompatActivity implements ChatSocketService
             }
         });
 
-        // Gửi tin nhắn khi nhấn Enter
+        // Gửi tin nhắn khi nhấn Enter (giống React form onSubmit)
         editMessage.setOnEditorActionListener((v, actionId, event) -> {
             sendMessage();
             return true;
         });
+        
+        // Update send button state based on text input (giống React disabled state)
+        editMessage.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateSendButtonState();
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
+        
+        // Initialize button state
+        updateSendButtonState();
     }
 
     private void sendMessage() {
         String message = editMessage.getText().toString().trim();
         
+        // Validation giống React: if (!text.trim()) return
         if (TextUtils.isEmpty(message)) {
+            Log.d(TAG, "📝 Cannot send empty message");
             return;
         }
         
+        // Check connection status
         if (!chatService.isConnected()) {
+            Log.e(TAG, "❌ Cannot send message - socket not connected");
             Toast.makeText(this, "Not connected to chat server", Toast.LENGTH_SHORT).show();
             return;
         }
         
+        Log.d(TAG, "📤 Sending message: " + message.substring(0, Math.min(20, message.length())) + "...");
+        Log.d(TAG, "📊 Message details - From: " + currentUserId + " To: " + receiverUserId);
+        
+        // Create and send request
         SendMessageRequest request = new SendMessageRequest(currentUserId, receiverUserId, message);
         chatService.sendMessage(request);
         
-        // Clear input
+        // Optimistic UI update - tạm thời hiển thị message ngay lập tức
+        ChatMessage optimisticMessage = new ChatMessage();
+        optimisticMessage.setSenderId(currentUserId);
+        optimisticMessage.setReceiverId(receiverUserId);
+        optimisticMessage.setMessage(message);
+        optimisticMessage.setCreatedAt(new java.util.Date());
+        optimisticMessage.setId(-1); // Temporary ID
+        
+        // Add to UI immediately (giống React setState)
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                chatAdapter.addMessage(optimisticMessage);
+                scrollToBottom();
+                Log.d(TAG, "✅ Message added to UI optimistically");
+            }
+        });
+        
+        // Clear input (giống React setText(''))
         editMessage.setText("");
+        updateSendButtonState();
+    }
+    
+    /**
+     * Update send button state based on input text (giống React disabled state)
+     * Logic: disabled={!text.trim()}
+     */
+    private void updateSendButtonState() {
+        String currentText = editMessage.getText().toString().trim();
+        boolean hasText = !TextUtils.isEmpty(currentText);
+        boolean isConnected = chatService != null && chatService.isConnected();
+        
+        // Enable button only if has text AND connected (giống React logic)
+        btnSend.setEnabled(hasText && isConnected);
+        
+        // Visual feedback giống React className conditional
+        if (hasText && isConnected) {
+            btnSend.setAlpha(1.0f); // Full opacity
+            btnSend.setBackgroundTintList(getResources().getColorStateList(android.R.color.holo_blue_bright));
+        } else {
+            btnSend.setAlpha(0.5f); // Dimmed
+            btnSend.setBackgroundTintList(getResources().getColorStateList(android.R.color.darker_gray));
+        }
+        
+        Log.d(TAG, "🎨 Send button state - HasText: " + hasText + ", IsConnected: " + isConnected + ", Enabled: " + btnSend.isEnabled());
     }
 
     private void loadPreviousMessages() {
@@ -240,7 +308,7 @@ public class ChatActivity extends AppCompatActivity implements ChatSocketService
 
     @Override
     public void onMessageSent(ChatMessage message) {
-        // Cũng cần filter cho sent messages
+        // Filter sent messages cho current chat
         boolean isFromCurrentChat = isMessageFromCurrentChat(message);
         
         if (!isFromCurrentChat) {
@@ -251,8 +319,11 @@ public class ChatActivity extends AppCompatActivity implements ChatSocketService
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "✅ Message sent successfully: " + message.getMessage());
-                chatAdapter.addMessage(message);
+                Log.d(TAG, "✅ Message sent confirmation received: " + message.getMessage());
+                
+                // Replace optimistic message with confirmed message from server
+                // (Tương tự như React khi server confirm)
+                chatAdapter.replaceOptimisticMessage(message);
                 scrollToBottom();
             }
         });
@@ -265,6 +336,11 @@ public class ChatActivity extends AppCompatActivity implements ChatSocketService
             public void run() {
                 Log.e(TAG, "Connection error: " + error);
                 textConnectionStatus.setText("Disconnected");
+                textConnectionStatus.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                
+                // Disable send button when disconnected
+                updateSendButtonState();
+                
                 Toast.makeText(ChatActivity.this, "Connection error: " + error, Toast.LENGTH_SHORT).show();
             }
         });
@@ -278,6 +354,9 @@ public class ChatActivity extends AppCompatActivity implements ChatSocketService
                 Log.d(TAG, "✅ Socket connected successfully");
                 textConnectionStatus.setText("Connected");
                 textConnectionStatus.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                
+                // Update send button state when connection established
+                updateSendButtonState();
                 
                 // Load messages khi socket đã connected
                 if (shouldLoadMessages) {

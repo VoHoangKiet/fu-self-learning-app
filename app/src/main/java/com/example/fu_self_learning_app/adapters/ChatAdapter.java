@@ -88,6 +88,32 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.messages.addAll(messages);
         notifyDataSetChanged();
     }
+    
+    /**
+     * Replace optimistic message with confirmed message from server
+     * (Giống React khi update message state từ server response)
+     */
+    public void replaceOptimisticMessage(ChatMessage confirmedMessage) {
+        // Find optimistic message by message content and sender
+        for (int i = messages.size() - 1; i >= 0; i--) {
+            ChatMessage existing = messages.get(i);
+            
+            // Check if this is the optimistic message (temporary ID = -1)
+            if (existing.getId() == -1 && 
+                existing.getSenderId() == confirmedMessage.getSenderId() &&
+                existing.getReceiverId() == confirmedMessage.getReceiverId() &&
+                existing.getMessage().equals(confirmedMessage.getMessage())) {
+                
+                // Replace with confirmed message
+                messages.set(i, confirmedMessage);
+                notifyItemChanged(i);
+                return;
+            }
+        }
+        
+        // If no optimistic message found, just add the confirmed message
+        addMessage(confirmedMessage);
+    }
 
     // ViewHolder cho tin nhắn đã gửi
     class SentMessageViewHolder extends RecyclerView.ViewHolder {

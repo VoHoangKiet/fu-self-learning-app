@@ -28,7 +28,7 @@ import io.socket.emitter.Emitter;
 // Service quản lý WebSocket chat với Socket.IO
 public class ChatSocketService {
     private static final String TAG = "ChatSocketService";
-    private static final String SOCKET_URL = "https://fu-self-learning-api-22235821035.asia-southeast1.run.app/chat";
+    private static final String SOCKET_URL = "https://fu-self-learning-api-22235821035.asia-southeast1.run.app";
     
     private Socket socket;
     private Context context;
@@ -48,6 +48,7 @@ public class ChatSocketService {
         this.context = context;
         this.gson = new Gson();
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+        testServerHealth(); // Test server connectivity
         initSocket();
     }
 
@@ -69,7 +70,7 @@ public class ChatSocketService {
                 Log.w(TAG, "⚠️ No userId found in SharedPreferences");
             }
             
-            socket = IO.socket(SOCKET_URL, options);
+            socket = IO.socket(SOCKET_URL + "/chat", options);
             setupEventListeners();
             
             Log.d(TAG, "🚀 Socket initialized successfully");
@@ -93,7 +94,17 @@ public class ChatSocketService {
         socket.on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                Log.d(TAG, "Socket disconnected");
+                Log.d(TAG, "Socket disconnected - Reason: " + (args.length > 0 ? args[0] : "Unknown"));
+                // Auto-reconnect after disconnect with delay
+                new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (socket != null && !socket.connected()) {
+                            Log.d(TAG, "🔄 Attempting to reconnect...");
+                            socket.connect();
+                        }
+                    }
+                }, 3000); // Retry after 3 seconds
             }
         });
 
@@ -110,14 +121,19 @@ public class ChatSocketService {
         socket.on("newMessage", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
+                Log.d(TAG, "📥 newMessage event received");
                 if (args.length > 0 && eventListener != null) {
                     try {
+                        Log.d(TAG, "📥 newMessage raw data: " + args[0].toString());
                         JsonObject jsonObject = new JsonParser().parse(args[0].toString()).getAsJsonObject();
                         ChatMessage message = parseChatMessage(jsonObject);
+                        Log.d(TAG, "✅ newMessage parsed successfully: " + message.getMessage());
                         eventListener.onNewMessage(message);
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing new message: " + e.getMessage());
                     }
+                } else {
+                    Log.w(TAG, "⚠️ newMessage called but no data or listener");
                 }
             }
         });
@@ -157,15 +173,100 @@ public class ChatSocketService {
         socket.on("messageSent", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
+                Log.d(TAG, "📤 messageSent event received");
                 if (args.length > 0 && eventListener != null) {
                     try {
+                        Log.d(TAG, "📤 messageSent raw data: " + args[0].toString());
                         JsonObject jsonObject = new JsonParser().parse(args[0].toString()).getAsJsonObject();
                         ChatMessage message = parseChatMessage(jsonObject);
+                        Log.d(TAG, "✅ messageSent parsed successfully: " + message.getMessage());
                         eventListener.onMessageSent(message);
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing sent message: " + e.getMessage());
                     }
+                } else {
+                    Log.w(TAG, "⚠️ messageSent called but no data or listener");
                 }
+            }
+        });
+
+        // Listen for common WebSocket events that servers might send
+        socket.on("messageReceived", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.d(TAG, "🎯 messageReceived event detected");
+                if (args.length > 0) {
+                    Log.d(TAG, "🎯 messageReceived data: " + args[0].toString());
+                }
+            }
+        });
+        
+        // Enhanced debugging - listen for ANY possible events from server
+        socket.on("response", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.d(TAG, "🔥 Server 'response' event: " + java.util.Arrays.toString(args));
+            }
+        });
+        
+        socket.on("ack", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.d(TAG, "🔥 Server 'ack' event: " + java.util.Arrays.toString(args));
+            }
+        });
+        
+        socket.on("messageProcessed", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.d(TAG, "🔥 Server 'messageProcessed' event: " + java.util.Arrays.toString(args));
+            }
+        });
+        
+        socket.on("messageStatus", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.d(TAG, "🔥 Server 'messageStatus' event: " + java.util.Arrays.toString(args));
+            }
+        });
+        
+        socket.on("messageConfirmed", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.d(TAG, "🔥 Server 'messageConfirmed' event: " + java.util.Arrays.toString(args));
+            }
+        });
+
+        socket.on("message", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.d(TAG, "🎯 message event detected");
+                if (args.length > 0) {
+                    Log.d(TAG, "🎯 message data: " + args[0].toString());
+                }
+            }
+        });
+
+        socket.on("error", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.e(TAG, "🚨 Socket error event: " + (args.length > 0 ? args[0].toString() : "No details"));
+            }
+        });
+
+        // Listen for any server response after sending
+        socket.on("response", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.d(TAG, "🎯 Server response event: " + (args.length > 0 ? args[0].toString() : "No data"));
+            }
+        });
+
+        // Listen for server acknowledgments
+        socket.on("ack", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.d(TAG, "🎯 Server ack event: " + (args.length > 0 ? args[0].toString() : "No data"));
             }
         });
     }
@@ -228,7 +329,47 @@ public class ChatSocketService {
             data.addProperty("receiverUserId", request.getReceiverUserId());
             data.addProperty("message", request.getMessage());
             
-            socket.emit("sendMessage", data);
+            Log.d(TAG, "📤 Sending message via socket - senderUserId: " + request.getSenderUserId() + 
+                ", receiverUserId: " + request.getReceiverUserId() + 
+                ", message: " + request.getMessage().substring(0, Math.min(20, request.getMessage().length())) + "...");
+            Log.d(TAG, "📡 Socket send data: " + data.toString());
+            Log.d(TAG, "🔗 Socket connection status before send: " + socket.connected());
+            
+            // Test different event names that server might be expecting
+            Log.d(TAG, "🧪 Testing multiple event emit formats...");
+            
+            // Format 1: Original backend format
+            socket.emit("sendMessage", data, new io.socket.client.Ack() {
+                @Override
+                public void call(Object... args) {
+                    Log.d(TAG, "🎯 Server ACK received for sendMessage");
+                    if (args.length > 0) {
+                        Log.d(TAG, "🎯 ACK data: " + args[0].toString());
+                    }
+                }
+            });
+            
+            // Format 2: Test plain object (maybe server expects plain object)
+            JsonObject plainData = new JsonObject();
+            plainData.addProperty("senderUserId", request.getSenderUserId());
+            plainData.addProperty("receiverUserId", request.getReceiverUserId());  
+            plainData.addProperty("message", request.getMessage());
+            
+            Log.d(TAG, "🧪 Also testing plain format: " + plainData.toString());
+            
+            Log.d(TAG, "📡 sendMessage event emitted successfully with callback");
+            
+            // Add a slight delay check to see if connection drops immediately
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "🔗 Socket connection status 1 second after send: " + (socket != null ? socket.connected() : "null"));
+                }
+            }, 1000);
+            
+        } else {
+            Log.e(TAG, "❌ Cannot send message - socket not connected");
+            Log.e(TAG, "❌ Socket details - isNull: " + (socket == null) + ", connected: " + (socket != null ? socket.connected() : "N/A"));
         }
     }
 
@@ -243,6 +384,35 @@ public class ChatSocketService {
         } else {
             Log.e(TAG, "❌ Cannot load messages - socket not connected");
         }
+    }
+
+    /**
+     * Test server health and message sending via HTTP (backup method)
+     */
+    public void testServerHealth() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    java.net.URL url = new java.net.URL("https://fu-self-learning-api-22235821035.asia-southeast1.run.app/");
+                    java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setConnectTimeout(5000);
+                    connection.setReadTimeout(5000);
+                    
+                    int responseCode = connection.getResponseCode();
+                    Log.d(TAG, "🌐 Server health check - Response code: " + responseCode);
+                    
+                    if (responseCode == 200) {
+                        Log.d(TAG, "✅ Server is reachable");
+                    } else {
+                        Log.w(TAG, "⚠️ Server returned: " + responseCode);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "❌ Server health check failed: " + e.getMessage());
+                }
+            }
+        }).start();
     }
 
     public void setEventListener(ChatEventListener listener) {
