@@ -3,9 +3,11 @@ package com.example.fu_self_learning_app.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonViewCourses;
     private boolean isLoggedIn;
     private String username;
+//    Button buttonTest;
 
     private void getLoginData() {
         SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
@@ -65,6 +68,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         if(username != null) {
+            textViewWelcomeUser.setText("Welcome " + username);
+        }
+
+//        buttonTest = findViewById(R.id.buttonTest);
+//        buttonTest.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
+//                String accessToken = prefs.getString("access_token", "Not Found");
+//                String username = prefs.getString("username", "Not Found");
+//                Log.d("ACCESS_TOKEN", accessToken);
+//                Log.d("USERNAME", username);
+//            }
+//        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
+        String username = prefs.getString("username", null);
+        if(username == null) {
+            Toast.makeText(getApplicationContext(), "Username not Found", Toast.LENGTH_SHORT).show();
+        } else {
             textViewWelcomeUser.setText("Welcome " + username);
         }
     }
