@@ -1,88 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center_horizontal"
-    >
+    android:background="@color/udemy_background">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="20dp"
-        >
-        <TextView
-            android:id="@+id/textViewLogin"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
+
+        <!-- Card View-like Container -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Login"
-            android:textSize="32sp"
-            android:gravity="center"
-            android:backgroundTint="@color/black"
-            />
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:layout_marginTop="48dp"
+            android:layout_marginBottom="48dp"
+            android:gravity="center_horizontal"
+            android:background="@android:drawable/dialog_holo_light_frame">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/textViewLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="FU Self Learning"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/udemy_purple"
+                android:gravity="center"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome back! Please login"
+                android:textSize="16sp"
+                android:textColor="@color/udemy_text_secondary"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Email -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textColor="@color/udemy_text_primary"
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/editTextEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="john_doe@gmail.com"
+                android:inputType="textEmailAddress"
+                android:background="@android:drawable/editbox_background"
+                android:textColor="@color/udemy_text_primary"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Password -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Password"
+                android:textColor="@color/udemy_text_primary"
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/editTextPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="••••••"
+                android:inputType="textPassword"
+                android:background="@android:drawable/editbox_background"
+                android:textColor="@color/udemy_text_primary"
+                android:padding="12dp"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Login Button -->
+            <Button
+                android:id="@+id/buttonLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Login"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/udemy_purple"
+                android:paddingVertical="12dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Chuyển sang Register -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Don't have an account yet?"
+                android:textColor="@color/udemy_text_secondary"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp" />
+
+            <Button
+                android:id="@+id/buttonGoRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Register"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:backgroundTint="@color/udemy_purple_light"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="10dp" />
+        </LinearLayout>
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/textViewEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Email"
-        android:textSize="20sp"
-        />
-
-    <EditText
-        android:id="@+id/editTextEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="john_doe@gmail.com"
-        android:inputType="textEmailAddress"
-        android:layout_marginBottom="16dp" />
-
-    <TextView
-        android:id="@+id/textViewPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Password"
-        android:textSize="20sp"
-        />
-
-    <EditText
-        android:id="@+id/editTextPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="••••••"
-        android:inputType="textPassword"
-        android:layout_marginBottom="24dp" />
-
-    <Button
-        android:id="@+id/buttonLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        android:textSize="18sp"
-        android:paddingVertical="15dp"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/blue"
-        />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Don't have any account yet? Sign Up!"
-        android:layout_marginTop="15dp"
-        android:textSize="18sp"
-        android:gravity="center"
-        />
-
-    <Button
-        android:id="@+id/buttonGoRegister"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Register"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/blue"
-        />
-
-</LinearLayout>
+</ScrollView>

@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fu_self_learning_app.R;
+import com.example.fu_self_learning_app.activities.MainActivity;
 import com.example.fu_self_learning_app.models.UserInfo;
 import com.example.fu_self_learning_app.models.request.LoginRequest;
 import com.example.fu_self_learning_app.models.response.LoginResponse;
@@ -27,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
 
     EditText editTextEmail, editTextPassword;
     Button buttonLogin, buttonGoRegister;
+//    Button buttonTest;
     AuthService authService = APIClient.getClient().create(AuthService.class);
 
     private void storeLoginDataToSharedPreferences(String accessToken, String refreshToken, UserInfo userInfo) {
@@ -55,6 +57,8 @@ public class LoginActivity extends AppCompatActivity {
                     userInfo = response.body().getUserInfo();
                     storeLoginDataToSharedPreferences(accessToken, refreshToken, userInfo);
                     Toast.makeText(getApplicationContext(), "Login Successfully", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
                     finish();
                 } else {
                     APIErrorUtils.handleError(getApplicationContext(), response);
@@ -105,5 +109,15 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+//        buttonTest = findViewById(R.id.buttonTest);
+//        buttonTest.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
+//                String accessToken = prefs.getString("access_token", "Not Found");
+//                Log.d("ACCESS_TOKEN", accessToken);
+//            }
+//        });
     }
 }
