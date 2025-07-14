@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fu_self_learning_app.R;
+import com.example.fu_self_learning_app.activities.MainActivity;
 import com.example.fu_self_learning_app.models.UserInfo;
 import com.example.fu_self_learning_app.models.request.LoginRequest;
 import com.example.fu_self_learning_app.models.response.LoginResponse;
@@ -76,6 +77,10 @@ public class LoginActivity extends AppCompatActivity {
                     
                     storeLoginDataToSharedPreferences(accessToken, refreshToken, userInfo);
                     Toast.makeText(getApplicationContext(), "Login Successfully", Toast.LENGTH_SHORT).show();
+                    
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                     finish();
                 } else {
                     Log.e("LoginActivity", "❌ Login failed - HTTP " + response.code() + ": " + response.message());

@@ -28,7 +28,7 @@ import io.socket.emitter.Emitter;
 
 public class ChatSocketService {
     private static final String TAG = "ChatSocketService";
-    private static final String SOCKET_URL = "https://88088a78ef64.ngrok-free.app/chat";
+    private static final String SOCKET_URL = "https://fu-self-learning-api-22235821035.asia-southeast1.run.app/chat";
     
     private Socket socket;
     private Context context;
