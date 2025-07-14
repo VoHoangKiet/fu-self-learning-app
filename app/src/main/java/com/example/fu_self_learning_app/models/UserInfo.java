@@ -26,6 +26,10 @@ public class UserInfo {
         return username;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public Date getDob() {
         return dob;
     }
@@ -33,6 +37,11 @@ public class UserInfo {
     public String getAvatarUrl() {
         return avatarUrl;
     }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
 
     public String getRole() {
         return role;

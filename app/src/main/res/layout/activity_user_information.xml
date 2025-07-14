@@ -56,7 +56,8 @@
             android:layout_height="wrap_content"
             android:hint="Avatar URL"
             android:inputType="textUri"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/btnUpdate"

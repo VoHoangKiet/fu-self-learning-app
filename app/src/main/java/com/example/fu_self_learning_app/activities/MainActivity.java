@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
         isLoggedIn = prefs.getBoolean("is_logged_in", false);
         username = prefs.getString("username", null);
-        Log.d("DEBUG_TOKEN", username); // Ghi log token để kiểm tra
 
     }
 
@@ -133,7 +132,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_settings) {
             // Handle settings navigation
             Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_logout) {
+        }else if (id == R.id.nav_social) {
+            Intent intent = new Intent(MainActivity.this, SocialActivity.class);
+            startActivity(intent); 
+        }else if (id == R.id.nav_logout) {
             // Handle logout
             logout();
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
