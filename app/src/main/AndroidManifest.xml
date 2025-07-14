@@ -65,6 +65,9 @@
             android:name=".activities.DebugActivity"
             android:exported="false">
         </activity>
+        <activity
+            android:name=".activities.SocialActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

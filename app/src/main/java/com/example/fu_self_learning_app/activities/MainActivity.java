@@ -2,7 +2,10 @@ package com.example.fu_self_learning_app.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -25,7 +29,23 @@ import com.example.fu_self_learning_app.R;
 import com.example.fu_self_learning_app.activities.auth.LoginActivity;
 import com.example.fu_self_learning_app.activities.ChatListActivity;
 import com.example.fu_self_learning_app.activities.DebugActivity;
+import com.example.fu_self_learning_app.network.APIClient;
+import com.example.fu_self_learning_app.services.InstructorRequestService;
+import com.example.fu_self_learning_app.utils.APIErrorUtils;
 import com.google.android.material.navigation.NavigationView;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     TextView textViewWelcomeUser;
@@ -40,13 +60,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView;
     private Toolbar toolbar;
     private ActionBarDrawerToggle toggle;
+    Button buttonInstructorRequest;
+    private static final int PICK_PDF_REQUEST = 1;
+    private TextView textFileName;
+    private Uri pdfUri;
+    private InstructorRequestService instructorRequestService;
 
     private void getLoginData() {
         SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
         isLoggedIn = prefs.getBoolean("is_logged_in", false);
         username = prefs.getString("username", "null");
         Log.d("DEBUG_TOKEN", username); // Ghi log token để kiểm tra
-
     }
 
     private void logout() {
@@ -71,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         toolbar = findViewById(R.id.toolbar);
+        buttonInstructorRequest = findViewById(R.id.buttonInstructorRequest);
 
         // Set up toolbar
         setSupportActionBar(toolbar);
@@ -128,6 +153,87 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
             }
         });
+
+        instructorRequestService = APIClient.getClient(getApplicationContext()).create(InstructorRequestService.class);
+        buttonInstructorRequest.setOnClickListener(v -> openFileChooser());
+    }
+
+    // mở File Picker để chọn File PDF
+    private void openFileChooser() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("application/pdf"); // chỉ được chọn PDF
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(Intent.createChooser(intent, "Choose PDF"), PICK_PDF_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_PDF_REQUEST && resultCode == RESULT_OK && data != null) {
+            pdfUri = data.getData(); // lấy Content URI của file, dùng ContentResolver & đọc qua stream
+            String fileName = getFileName(pdfUri);
+            Log.d("DEBUG", String.valueOf(pdfUri));
+            Log.d("DEBUG", fileName);
+            uploadPdf(pdfUri, fileName);
+//            textFileName.setText("Đã chọn: " + fileName);
+//            uploadPdf(pdfUri, fileName);
+        }
+    }
+
+    // lấy tên file từ Content URI
+    private String getFileName(Uri uri) {
+        String name = "file.pdf";
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            name = cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME));
+            cursor.close();
+        }
+        return name;
+    }
+
+    private void uploadPdf(Uri uri, String fileName) {
+        try {
+            File file = createTempFileFromUri(uri, fileName);
+            RequestBody requestFile = RequestBody.create(MediaType.parse("application/pdf"), file); // tạo RequestBody chứa dữ liệu file
+            MultipartBody.Part part = MultipartBody.Part.createFormData("pdf", file.getName(), requestFile); // Bọc thành MultipartBody.Part với field name là "file"
+
+            Call<ResponseBody> call = instructorRequestService.uploadPdf(part);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if(response.isSuccessful()) {
+                        Toast.makeText(MainActivity.this, "Upload successfully", Toast.LENGTH_SHORT).show();
+                    } else {
+                        APIErrorUtils.handleError(getApplicationContext(), response);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.e("Upload PDF (API) error: ", t.getMessage());
+                    Toast.makeText(MainActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        } catch (Exception e) {
+            Log.e("ERROR", "Upload pdf error: " + e.getMessage());
+            e.printStackTrace();
+            Toast.makeText(this, "Cannot read file, error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // tạo file tạm thời từ Uri, dùng stream để ghi và đọc
+    private File createTempFileFromUri(Uri uri, String fileName) throws Exception {
+        File tempFile = new File(getCacheDir(), fileName);
+        InputStream inputStream = getContentResolver().openInputStream(uri);
+        OutputStream outputStream = new FileOutputStream(tempFile);
+        byte[] buffer = new byte[4096];
+        int read;
+        while ((read = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, read);
+        }
+        inputStream.close();
+        outputStream.close();
+        return tempFile;
     }
 
     @Override
@@ -147,10 +253,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent intent = new Intent(MainActivity.this, ChatListActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_settings) {
-            // Handle settings navigation - Open Debug Activity
-            Intent intent = new Intent(MainActivity.this, DebugActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_logout) {
+            // Handle settings navigation
+            Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
+        }else if (id == R.id.nav_social) {
+            Intent intent = new Intent(MainActivity.this, SocialActivity.class);
+            startActivity(intent); 
+        }else if (id == R.id.nav_logout) {
             // Handle logout
             logout();
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);

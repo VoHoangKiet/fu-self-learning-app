@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
 
     EditText editTextEmail, editTextPassword;
     Button buttonLogin, buttonGoRegister;
+//    Button buttonTest;
     AuthService authService = APIClient.getClient().create(AuthService.class);
 
     private void storeLoginDataToSharedPreferences(String accessToken, String refreshToken, UserInfo userInfo) {
@@ -77,9 +78,7 @@ public class LoginActivity extends AppCompatActivity {
                     
                     storeLoginDataToSharedPreferences(accessToken, refreshToken, userInfo);
                     Toast.makeText(getApplicationContext(), "Login Successfully", Toast.LENGTH_SHORT).show();
-                    
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
                 } else {
@@ -136,5 +135,15 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+//        buttonTest = findViewById(R.id.buttonTest);
+//        buttonTest.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
+//                String accessToken = prefs.getString("access_token", "Not Found");
+//                Log.d("ACCESS_TOKEN", accessToken);
+//            }
+//        });
     }
 }

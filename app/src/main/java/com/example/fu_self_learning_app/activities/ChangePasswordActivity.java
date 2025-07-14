@@ -36,7 +36,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
         edtNewPassword = findViewById(R.id.edtNewPassword);
         edtConfirmPassword = findViewById(R.id.edtConfirmPassword);
         btnChange = findViewById(R.id.btnChange);
-
         SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
         token = "Bearer " + prefs.getString("access_token", "");
 
@@ -58,6 +57,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
             userService.changePassword(token, request).enqueue(new Callback<UserProfileResponse>() {
                 @Override
                 public void onResponse(Call<UserProfileResponse> call, Response<UserProfileResponse> response) {
+                    Log.d("DEBUG_OLD_PASSWORD", "Old password: " + response.isSuccessful());
                     if (response.isSuccessful()) {
                         Toast.makeText(ChangePasswordActivity.this, "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
                         finish();

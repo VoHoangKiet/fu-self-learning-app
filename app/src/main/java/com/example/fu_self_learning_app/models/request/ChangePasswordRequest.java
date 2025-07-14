@@ -4,12 +4,12 @@ package com.example.fu_self_learning_app.models.request;
 public class ChangePasswordRequest {
     private String currentPassword;
     private String newPassword;
-    private String confirmPassword;
+    private String confirmNewPassword;
 
-    public ChangePasswordRequest(String currentPassword, String newPassword, String confirmPassword) {
+    public ChangePasswordRequest(String currentPassword, String newPassword, String confirmNewPassword) {
         this.currentPassword = currentPassword;
         this.newPassword = newPassword;
-        this.confirmPassword = confirmPassword;
+        this.confirmNewPassword = confirmNewPassword;
     }
 
     public String getCurrentPassword() {
@@ -20,7 +20,7 @@ public class ChangePasswordRequest {
         return newPassword;
     }
 
-    public String getConfirmPassword() {
-        return confirmPassword;
+    public String getConfirmNewPassword() {
+        return confirmNewPassword;
     }
 }
