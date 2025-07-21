@@ -54,6 +54,26 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
         <activity
+            android:name=".activities.ChatActivity"
+            android:exported="false">
+        </activity>
+        <activity
+            android:name=".activities.ChatListActivity"
+            android:exported="false">
+        </activity>
+        <activity
+            android:name=".activities.DebugActivity"
+            android:exported="false">
+            </activity>
+        <activity
+            android:name=".activities.LessonsActivity"
+            android:exported="false">
+        </activity>
+        <activity
+            android:name=".activities.PaymentConfirmActivity"
+            android:exported="false">
+        </activity>
+        <activity
             android:name=".activities.SocialActivity"
             android:exported="true" />
 

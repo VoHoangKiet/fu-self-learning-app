@@ -43,4 +43,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     implementation 'com.github.mhiew:android-pdf-viewer:3.2.0-beta.3'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0' // Nếu dùng Java
-}
+    
+    // Socket.IO for WebSocket chat
+    implementation 'io.socket:socket.io-client:2.0.0'
+    }

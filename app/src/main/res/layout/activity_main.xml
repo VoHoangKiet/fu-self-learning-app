@@ -126,6 +126,25 @@
 
             </androidx.cardview.widget.CardView>
 
+            <!-- Chat Button -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/buttonChat"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Chat with Users"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:background="#4CAF50"
+                    android:textAllCaps="false" />
+
+            </androidx.cardview.widget.CardView>
+
             <!-- Logout Button -->
             <Button
                 android:id="@+id/buttonLogout"
