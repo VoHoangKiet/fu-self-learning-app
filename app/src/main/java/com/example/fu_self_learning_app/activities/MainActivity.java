@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        instructorRequestService = APIClient.getClient(getApplicationContext()).create(InstructorRequestService.class);
+        instructorRequestService = APIClient.getClient(this).create(InstructorRequestService.class);
         buttonInstructorRequest.setOnClickListener(v -> openFileChooser());
     }
 

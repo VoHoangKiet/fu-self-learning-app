@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_create_course" android:icon="@android:drawable/ic_menu_close_clear_cancel" android:title="Create Course" />
+        <item android:id="@+id/nav_create_course" android:icon="@drawable/ic_create_course" android:title="Create Course" />
 
         <item android:id="@+id/nav_logout" android:icon="@android:drawable/ic_menu_close_clear_cancel" android:title="Logout" />
     </group>
