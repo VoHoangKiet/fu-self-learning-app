@@ -11,6 +11,7 @@ public class UserInfo {
     private String avatarUrl;
     private String role;
     private String phoneNumber;
+    private Boolean isActive;
     private Date createdAt;
     private Date updatedAt;
 
@@ -49,6 +50,10 @@ public class UserInfo {
 
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    public Boolean getActive() {
+        return isActive;
     }
 
     public Date getCreatedAt() {

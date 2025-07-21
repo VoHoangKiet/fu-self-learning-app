@@ -63,10 +63,35 @@
         </activity>
         <activity
             android:name=".activities.DebugActivity"
+            android:name=".activities.LessonsActivity"
+            android:exported="false">
+        </activity>
+        <activity
+            android:name=".activities.PaymentConfirmActivity"
             android:exported="false">
         </activity>
         <activity
             android:name=".activities.SocialActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".activities.admin.AdminHomePageActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".activities.admin.AdminInstructorRequestActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".activities.admin.AdminViewInstructorRequestActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".activities.admin.AdminUserBanActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".activities.admin.AdminUserUnbanActivity"
             android:exported="true" />
     </application>
 

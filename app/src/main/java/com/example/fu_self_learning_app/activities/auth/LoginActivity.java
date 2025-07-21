@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fu_self_learning_app.R;
 import com.example.fu_self_learning_app.activities.MainActivity;
+import com.example.fu_self_learning_app.activities.admin.AdminHomePageActivity;
 import com.example.fu_self_learning_app.models.UserInfo;
 import com.example.fu_self_learning_app.models.request.LoginRequest;
 import com.example.fu_self_learning_app.models.response.LoginResponse;
@@ -78,9 +79,18 @@ public class LoginActivity extends AppCompatActivity {
                     
                     storeLoginDataToSharedPreferences(accessToken, refreshToken, userInfo);
                     Toast.makeText(getApplicationContext(), "Login Successfully", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    String role = userInfo.getRole();
+                    Log.d("ROLE", role);
+                    if(role.equals("student") || role.equals("instructor")) {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else if(role.equals("admin")) {
+                        Intent intent = new Intent(LoginActivity.this, AdminHomePageActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
                 } else {
                     Log.e("LoginActivity", "❌ Login failed - HTTP " + response.code() + ": " + response.message());
                     APIErrorUtils.handleError(getApplicationContext(), response);

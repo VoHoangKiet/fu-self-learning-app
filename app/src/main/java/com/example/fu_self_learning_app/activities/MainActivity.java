@@ -1,5 +1,4 @@
 package com.example.fu_self_learning_app.activities;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -26,6 +25,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.fu_self_learning_app.R;
+import com.example.fu_self_learning_app.activities.admin.AdminHomePageActivity;
 import com.example.fu_self_learning_app.activities.auth.LoginActivity;
 import com.example.fu_self_learning_app.activities.ChatListActivity;
 import com.example.fu_self_learning_app.activities.DebugActivity;
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Button buttonViewCourses;
     Button buttonChat;
     private boolean isLoggedIn;
-    private String username;
+    private String username, role;
 
     // Navigation components
     private DrawerLayout drawerLayout;
@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void getLoginData() {
         SharedPreferences prefs = getSharedPreferences("Auth", MODE_PRIVATE);
         isLoggedIn = prefs.getBoolean("is_logged_in", false);
-        username = prefs.getString("username", "null");
-        Log.d("DEBUG_TOKEN", username); // Ghi log token để kiểm tra
+        username = prefs.getString("username", null);
+        role = prefs.getString("role", null);
     }
 
     private void logout() {
@@ -121,6 +121,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
             finish();
             return;
+        } else {
+            if(role.equals("admin")) {
+                Intent intent = new Intent(MainActivity.this, AdminHomePageActivity.class);
+                startActivity(intent);
+                finish();
+                return;
+            }
         }
 
         if(username != null) {
@@ -160,20 +167,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // mở File Picker để chọn File PDF
     private void openFileChooser() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("application/pdf"); // chỉ được chọn PDF
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(Intent.createChooser(intent, "Choose PDF"), PICK_PDF_REQUEST);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT); // lấy dữ liệu từ user, từ các ứng dụng như File Manager, GG Drive
+        intent.setType("application/pdf"); // only PDF allowed
+        intent.addCategory(Intent.CATEGORY_OPENABLE); // chỉ các tệp có thể mở
+        startActivityForResult(Intent.createChooser(intent, "Choose PDF"), PICK_PDF_REQUEST); // gọi activty, chờ kết quả File được trả về
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_PDF_REQUEST && resultCode == RESULT_OK && data != null) {
-            pdfUri = data.getData(); // lấy Content URI của file, dùng ContentResolver & đọc qua stream
+            pdfUri = data.getData(); // lấy Content URI của file (do OS quản lý), dùng ContentResolver & đọc qua stream
             String fileName = getFileName(pdfUri);
-            Log.d("DEBUG", String.valueOf(pdfUri));
-            Log.d("DEBUG", fileName);
+//            Log.d("DEBUG", String.valueOf(pdfUri));
+//            Log.d("DEBUG", fileName);
             uploadPdf(pdfUri, fileName);
 //            textFileName.setText("Đã chọn: " + fileName);
 //            uploadPdf(pdfUri, fileName);
@@ -183,8 +190,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // lấy tên file từ Content URI
     private String getFileName(Uri uri) {
         String name = "file.pdf";
+        // lấy thông tin metadata từ uri, cursor chứa các cột thông tin của File
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
+            // lấy cột DISPLAY_NAME, nếu ko có trả về lõi (getColumnIndexOrThrow)
             name = cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME));
             cursor.close();
         }
@@ -223,12 +232,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // tạo file tạm thời từ Uri, dùng stream để ghi và đọc
     private File createTempFileFromUri(Uri uri, String fileName) throws Exception {
-        File tempFile = new File(getCacheDir(), fileName);
-        InputStream inputStream = getContentResolver().openInputStream(uri);
-        OutputStream outputStream = new FileOutputStream(tempFile);
-        byte[] buffer = new byte[4096];
+        File tempFile = new File(getCacheDir(), fileName); // tạo một file trong thư mục cache của app
+        InputStream inputStream = getContentResolver().openInputStream(uri); // object đọc dữ liệu từ File
+        OutputStream outputStream = new FileOutputStream(tempFile); // object ghi dữ liệu vào tempFile
+        byte[] buffer = new byte[4096]; // buffer tối đa chứa 4096 bytes
         int read;
-        while ((read = inputStream.read(buffer)) != -1) {
+        while ((read = inputStream.read(buffer)) != -1) { // đọc buffer, read == -1 nghĩa là đã đọc hết File
             outputStream.write(buffer, 0, read);
         }
         inputStream.close();

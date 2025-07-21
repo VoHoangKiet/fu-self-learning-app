@@ -16,4 +16,6 @@
     <color name="udemy_rating">#E59819</color>
     <color name="udemy_bestseller">#E67E00</color>
     <color name="udemy_free">#52C41A</color>
+    <color name="udemy_danger">#D9534F</color>
+    <color name="udemy_success">#5CB85C</color>
 </resources>
