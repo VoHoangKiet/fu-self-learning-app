@@ -76,6 +76,14 @@
         <activity
             android:name=".activities.admin.AdminUserUnbanActivity"
             android:exported="true" />
+
+        <activity
+            android:name=".activities.instructor.InstructorHomePageActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".activities.instructor.InstructorCourseCreateActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

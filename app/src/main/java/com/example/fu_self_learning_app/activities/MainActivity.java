@@ -28,6 +28,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.fu_self_learning_app.R;
 import com.example.fu_self_learning_app.activities.admin.AdminHomePageActivity;
 import com.example.fu_self_learning_app.activities.auth.LoginActivity;
+import com.example.fu_self_learning_app.activities.instructor.InstructorHomePageActivity;
 import com.example.fu_self_learning_app.network.APIClient;
 import com.example.fu_self_learning_app.services.InstructorRequestService;
 import com.example.fu_self_learning_app.utils.APIErrorUtils;
@@ -121,6 +122,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             if(role.equals("admin")) {
                 Intent intent = new Intent(MainActivity.this, AdminHomePageActivity.class);
+                startActivity(intent);
+                finish();
+                return;
+            } else if(role.equals("instructor")) {
+                Intent intent = new Intent(MainActivity.this, InstructorHomePageActivity.class);
                 startActivity(intent);
                 finish();
                 return;
