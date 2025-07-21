@@ -1,4 +1,5 @@
 package com.example.fu_self_learning_app.activities;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -27,6 +28,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.fu_self_learning_app.R;
 import com.example.fu_self_learning_app.activities.admin.AdminHomePageActivity;
 import com.example.fu_self_learning_app.activities.auth.LoginActivity;
+import com.example.fu_self_learning_app.activities.instructor.InstructorHomePageActivity;
 import com.example.fu_self_learning_app.activities.ChatListActivity;
 import com.example.fu_self_learning_app.activities.DebugActivity;
 import com.example.fu_self_learning_app.network.APIClient;
@@ -127,6 +129,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
                 finish();
                 return;
+            } else if(role.equals("instructor")) {
+                Intent intent = new Intent(MainActivity.this, InstructorHomePageActivity.class);
+                startActivity(intent);
+                finish();
+                return;
             }
         }
 
@@ -161,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        instructorRequestService = APIClient.getClient(getApplicationContext()).create(InstructorRequestService.class);
+        instructorRequestService = APIClient.getClient(this).create(InstructorRequestService.class);
         buttonInstructorRequest.setOnClickListener(v -> openFileChooser());
     }
 

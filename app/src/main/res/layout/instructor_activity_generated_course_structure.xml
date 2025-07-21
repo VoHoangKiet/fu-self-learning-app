@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="12dp"
+    android:background="@android:color/background_light">
+
+    <TextView
+        android:id="@+id/textCourseTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Course Title"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:paddingBottom="4dp" />
+
+    <TextView
+        android:id="@+id/textCourseDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="This is the course description."
+        android:textSize="16sp"
+        android:textColor="#444444"
+        android:paddingBottom="8dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewTopics"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
+</LinearLayout>

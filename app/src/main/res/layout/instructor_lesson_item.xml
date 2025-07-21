@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="12dp"
+    android:paddingHorizontal="8dp"
+    android:gravity="center_vertical">
+
+    <!-- Play Icon -->
+    <ImageView
+        android:id="@+id/imagePlay"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="12dp"
+        android:contentDescription="Play Icon" />
+
+    <!-- Text Container -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/textLessonTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lesson Title"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/textLessonDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Short lesson description..."
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</LinearLayout>

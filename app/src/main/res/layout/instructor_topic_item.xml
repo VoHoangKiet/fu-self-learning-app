@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:layout_margin="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_topic_card">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/textTopicTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Topic Title"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Description -->
+    <TextView
+        android:id="@+id/textTopicDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Topic Description"
+        android:textSize="14sp"
+        android:textColor="#555555"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Lesson List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewLessons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false" />
+
+</LinearLayout>

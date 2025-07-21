@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activities.admin.AdminHomePageActivity">
+    tools:context=".activities.instructor.InstructorHomePageActivity">
 
     <!-- Combined Header with Toolbar and Welcome -->
     <LinearLayout
@@ -53,6 +53,6 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/admin_navigation_menu" />
+        app:menu="@menu/instructor_navigation_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="12dp"
+    android:background="@android:color/background_light">
+
+    <Button
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="20dp"
+        android:id="@+id/buttonImport"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Import PDF File" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/textHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Generated Course Structure"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:paddingBottom="4dp" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/textCourseTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Course Title"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:paddingBottom="4dp" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/textCourseDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="This is the course description."
+        android:textSize="16sp"
+        android:textColor="#444444"
+        android:paddingBottom="8dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewTopics"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/buttonAddImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Image"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/udemy_purple"
+        android:paddingVertical="12dp"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/buttonAddDocument"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Document"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/udemy_purple"
+        android:paddingVertical="12dp"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/buttonCreate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/udemy_purple"
+        android:paddingVertical="12dp"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>
