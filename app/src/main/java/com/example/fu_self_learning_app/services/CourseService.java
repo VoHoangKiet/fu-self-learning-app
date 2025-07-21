@@ -1,12 +1,20 @@
 package com.example.fu_self_learning_app.services;
 
 import com.example.fu_self_learning_app.models.Course;
+import com.example.fu_self_learning_app.models.Topic;
+import com.example.fu_self_learning_app.models.request.EnrollmentRequest;
 import com.example.fu_self_learning_app.models.response.CourseDetailResponse;
+import com.example.fu_self_learning_app.models.response.EnrollmentCheckResponse;
+import com.example.fu_self_learning_app.models.response.EnrollmentResponse;
+import com.example.fu_self_learning_app.models.response.OrderResponse;
+import com.example.fu_self_learning_app.models.request.OrderRequest;
 
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -28,4 +36,16 @@ public interface CourseService {
     
     @GET("v1/courses/search") // API endpoint để tìm kiếm khóa học
     Call<List<Course>> searchCourses(@Query("q") String query);
+    
+    @GET("v1/enrollments/course/{courseId}/check") // API endpoint để check enrollment
+    Call<EnrollmentCheckResponse> checkEnrollment(@Path("courseId") int courseId);
+    
+    @POST("v1/enrollments") // API endpoint để enroll course
+    Call<EnrollmentResponse> enrollCourse(@Body EnrollmentRequest request);
+    
+    @GET("v1/courses/{courseId}/topics") // API endpoint để lấy topics và lessons của course
+    Call<List<Topic>> getCourseTopics(@Path("courseId") int courseId);
+
+    @POST("v1/orders/create/{courseId}") // API endpoint để tạo order cho confirm payment
+    Call<OrderResponse> createOrder(@Path("courseId") int courseId, @Body OrderRequest request);
 } 

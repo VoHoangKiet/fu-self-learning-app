@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:gravity="center_vertical"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- Play/Check icon -->
+    <ImageView
+        android:id="@+id/imageViewLessonIcon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@android:drawable/ic_media_play"
+        android:tint="@color/udemy_text_secondary"
+        android:layout_marginEnd="12dp" />
+
+    <!-- Lesson info -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textViewLessonTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="What is Digital Marketing?"
+            android:textSize="14sp"
+            android:textColor="@color/udemy_text_primary"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
+    </LinearLayout>
+
+    <!-- Lesson Duration -->
+    <TextView
+        android:id="@+id/textViewLessonDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="20s"
+        android:textSize="12sp"
+        android:textColor="@color/udemy_text_secondary"
+        android:layout_marginStart="8dp" />
+
+    <!-- Completion status -->
+    <ImageView
+        android:id="@+id/imageViewCompletionStatus"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@android:drawable/ic_menu_agenda"
+        android:tint="@color/udemy_success"
+        android:visibility="gone"
+        android:layout_marginStart="8dp" />
+
+</LinearLayout> 

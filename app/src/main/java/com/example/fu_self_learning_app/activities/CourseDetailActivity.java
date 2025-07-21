@@ -23,9 +23,13 @@ import com.example.fu_self_learning_app.R;
 import com.example.fu_self_learning_app.adapters.TopicAdapter;
 import com.example.fu_self_learning_app.models.Category;
 import com.example.fu_self_learning_app.models.Topic;
+import com.example.fu_self_learning_app.models.request.EnrollmentRequest;
 import com.example.fu_self_learning_app.models.response.CourseDetailResponse;
+import com.example.fu_self_learning_app.models.response.EnrollmentCheckResponse;
+import com.example.fu_self_learning_app.models.response.EnrollmentResponse;
 import com.example.fu_self_learning_app.network.APIClient;
 import com.example.fu_self_learning_app.services.CourseService;
+import com.example.fu_self_learning_app.utils.PayOSHelper;
 import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
@@ -69,6 +73,7 @@ public class CourseDetailActivity extends AppCompatActivity implements TopicAdap
     private CourseDetailResponse courseDetail;
     private TopicAdapter topicAdapter;
     private CourseService courseService;
+    private boolean isEnrolled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +93,47 @@ public class CourseDetailActivity extends AppCompatActivity implements TopicAdap
         setupRecyclerView();
         setupListeners();
         loadCourseDetail();
+        checkEnrollmentStatus();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "CourseDetailActivity onResume - rechecking enrollment status");
+        // Re-check enrollment status when returning from payment
+        checkEnrollmentStatus();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d(TAG, "CourseDetailActivity onNewIntent");
+        
+        // Handle potential PayOS callback
+        if (intent != null && intent.getData() != null) {
+            String data = intent.getData().toString();
+            Log.d(TAG, "Received intent data: " + data);
+            
+            if (PayOSHelper.isPayOSCallback(data)) {
+                PayOSHelper.PaymentResult result = PayOSHelper.parsePaymentResult(data);
+                handlePaymentResult(result);
+            }
+        }
+    }
+
+    private void handlePaymentResult(PayOSHelper.PaymentResult result) {
+        Log.d(TAG, "Handling payment result: success=" + result.isSuccess() + ", message=" + result.getMessage());
+        
+        if (result.isSuccess()) {
+            Toast.makeText(this, "Payment successful! You are now enrolled.", Toast.LENGTH_LONG).show();
+            isEnrolled = true;
+            updateEnrollmentButton();
+        } else {
+            Toast.makeText(this, "Payment failed: " + result.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        
+        // Re-check enrollment status from server
+        checkEnrollmentStatus();
     }
 
     private void initViews() {
@@ -153,8 +199,7 @@ public class CourseDetailActivity extends AppCompatActivity implements TopicAdap
 
         buttonEnrollNow.setOnClickListener(v -> {
             if (courseDetail != null) {
-                // TODO: Implement enrollment logic
-                Toast.makeText(this, "Enrollment feature coming soon!", Toast.LENGTH_SHORT).show();
+                handleEnrollmentAction();
             }
         });
     }
@@ -177,6 +222,171 @@ public class CourseDetailActivity extends AppCompatActivity implements TopicAdap
             public void onFailure(Call<CourseDetailResponse> call, Throwable t) {
                 Log.e(TAG, "Error loading course detail", t);
                 Toast.makeText(CourseDetailActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void checkEnrollmentStatus() {
+        Call<EnrollmentCheckResponse> call = courseService.checkEnrollment(courseId);
+        call.enqueue(new Callback<EnrollmentCheckResponse>() {
+            @Override
+            public void onResponse(Call<EnrollmentCheckResponse> call, Response<EnrollmentCheckResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    EnrollmentCheckResponse enrollmentCheck = response.body();
+                    isEnrolled = enrollmentCheck.isEnrolled();
+                    updateEnrollmentButton();
+                } else {
+                    Log.e(TAG, "Failed to check enrollment: " + response.code());
+                    // Default to not enrolled
+                    isEnrolled = false;
+                    updateEnrollmentButton();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EnrollmentCheckResponse> call, Throwable t) {
+                Log.e(TAG, "Error checking enrollment", t);
+                // Default to not enrolled
+                isEnrolled = false;
+                updateEnrollmentButton();
+            }
+        });
+    }
+
+    private void updateEnrollmentButton() {
+        if (isEnrolled) {
+            buttonEnrollNow.setText("Continue Learning");
+            buttonEnrollNow.setBackgroundColor(getResources().getColor(android.R.color.holo_green_dark));
+        } else {
+            buttonEnrollNow.setText("Enroll Now");
+            buttonEnrollNow.setBackgroundColor(getResources().getColor(R.color.udemy_purple));
+        }
+    }
+
+    private void handleEnrollmentAction() {
+        if (isEnrolled) {
+            // Navigate to lessons
+            Intent intent = LessonsActivity.createIntent(this, courseId, courseDetail.getTitle());
+            startActivity(intent);
+        } else {
+            // Check if course is free or paid
+            if (courseDetail != null) {
+                try {
+                    double price = Double.parseDouble(courseDetail.getPrice());
+                    if (price <= 0) {
+                        // Free course - direct enrollment
+                        enrollInCourse("free");
+                    } else {
+                        // Paid course - redirect to payment confirmation
+                        Intent intent = PaymentConfirmActivity.createIntent(
+                            this, 
+                            courseId, 
+                            courseDetail.getTitle(), 
+                            courseDetail.getPrice(), 
+                            courseDetail.getImageUrl()
+                        );
+                        startActivity(intent);
+                    }
+                } catch (NumberFormatException e) {
+                    // Default to free if price parsing fails
+                    enrollInCourse("free");
+                }
+            }
+        }
+    }
+
+    private void showPaymentDialog() {
+        if (courseDetail == null) return;
+        
+        String price = formatPrice(courseDetail.getPrice());
+        
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Course Enrollment")
+                .setMessage("This course costs " + price + ". Would you like to proceed with PayOS payment?\n\n" +
+                           "Note: You will be redirected to a secure payment page.")
+                .setPositiveButton("Pay with PayOS", (dialog, which) -> {
+                    Log.d(TAG, "User confirmed PayOS payment");
+                    enrollInCourse("payos");
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    Log.d(TAG, "User cancelled payment");
+                })
+                .setCancelable(true)
+                .show();
+    }
+
+    private void enrollInCourse(String paymentMethod) {
+        Log.d(TAG, "Starting enrollment with payment method: " + paymentMethod);
+        
+        EnrollmentRequest request = new EnrollmentRequest(courseId, paymentMethod);
+        
+        Call<EnrollmentResponse> call = courseService.enrollCourse(request);
+        call.enqueue(new Callback<EnrollmentResponse>() {
+            @Override
+            public void onResponse(Call<EnrollmentResponse> call, Response<EnrollmentResponse> response) {
+                Log.d(TAG, "Enrollment response received. Success: " + response.isSuccessful() + ", Code: " + response.code());
+                
+                if (response.isSuccessful() && response.body() != null) {
+                    EnrollmentResponse enrollmentResponse = response.body();
+                    Log.d(TAG, "Enrollment response body: success=" + enrollmentResponse.isSuccess() + 
+                          ", message=" + enrollmentResponse.getMessage() + 
+                          ", paymentUrl=" + enrollmentResponse.getPaymentUrl());
+                    
+                    if (enrollmentResponse.isSuccess()) {
+                        if ("payos".equals(paymentMethod)) {
+                            String paymentUrl = enrollmentResponse.getPaymentUrl();
+                            Log.d(TAG, "PayOS payment URL received: " + paymentUrl);
+                            
+                            if (paymentUrl != null && !paymentUrl.isEmpty()) {
+                                // Open PayOS payment URL
+                                Log.d(TAG, "Opening PayOS payment URL");
+                                PayOSHelper.openPaymentUrl(CourseDetailActivity.this, paymentUrl);
+                                
+                                Toast.makeText(CourseDetailActivity.this, 
+                                    "Redirecting to payment page...\nReturn to app after payment completion", 
+                                    Toast.LENGTH_LONG).show();
+                            } else {
+                                Log.e(TAG, "PayOS payment URL is null or empty");
+                                Toast.makeText(CourseDetailActivity.this, 
+                                    "Payment URL not received. Please try again.", 
+                                    Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            // Free enrollment successful
+                            Log.d(TAG, "Free enrollment successful");
+                            isEnrolled = true;
+                            updateEnrollmentButton();
+                            Toast.makeText(CourseDetailActivity.this, "Successfully enrolled!", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Log.e(TAG, "Enrollment failed: " + enrollmentResponse.getMessage());
+                        Toast.makeText(CourseDetailActivity.this, 
+                            "Enrollment failed: " + enrollmentResponse.getMessage(), 
+                            Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Log.e(TAG, "Enrollment API call failed. Response code: " + response.code());
+                    String errorBody = "";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorBody = response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error reading error body", e);
+                    }
+                    
+                    Toast.makeText(CourseDetailActivity.this, 
+                        "Enrollment failed. Please check your connection and try again.", 
+                        Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EnrollmentResponse> call, Throwable t) {
+                Log.e(TAG, "Network error during enrollment", t);
+                Toast.makeText(CourseDetailActivity.this, 
+                    "Network error: " + t.getMessage() + "\nPlease check your connection and try again.", 
+                    Toast.LENGTH_LONG).show();
             }
         });
     }
