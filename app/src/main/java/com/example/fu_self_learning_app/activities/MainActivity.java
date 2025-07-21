@@ -1,5 +1,4 @@
 package com.example.fu_self_learning_app.activities;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -28,6 +27,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.fu_self_learning_app.R;
 import com.example.fu_self_learning_app.activities.admin.AdminHomePageActivity;
 import com.example.fu_self_learning_app.activities.auth.LoginActivity;
+import com.example.fu_self_learning_app.activities.ChatListActivity;
+import com.example.fu_self_learning_app.activities.DebugActivity;
 import com.example.fu_self_learning_app.network.APIClient;
 import com.example.fu_self_learning_app.services.InstructorRequestService;
 import com.example.fu_self_learning_app.utils.APIErrorUtils;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TextView textViewWelcomeUser;
     Button buttonLogout;
     Button buttonViewCourses;
+    Button buttonChat;
     private boolean isLoggedIn;
     private String username, role;
 
@@ -87,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         textViewWelcomeUser = findViewById(R.id.textViewWelcomeUser);
         buttonLogout = findViewById(R.id.buttonLogout);
         buttonViewCourses = findViewById(R.id.buttonViewCourses);
+        buttonChat = findViewById(R.id.buttonChat);
 
         // Initialize navigation components
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -146,6 +149,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, CoursesActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        buttonChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ChatListActivity.class);
                 startActivity(intent);
             }
         });
@@ -245,6 +256,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_courses) {
             // Navigate to courses
             Intent intent = new Intent(MainActivity.this, CoursesActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_chat) {
+            // Navigate to chat list
+            Intent intent = new Intent(MainActivity.this, ChatListActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_settings) {
             // Handle settings navigation
